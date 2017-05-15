@@ -1,3 +1,6 @@
+#ifndef __PROTOCOL_H__
+#define __PROTOCOL_H__
+
 #define PACKET_SIZE 256
 #define IDENTIFIER_SIZE 5
 #define DELIM 	"  "
@@ -54,3 +57,5 @@ struct Message  {
     char padding; 
     char data[248];
 };
+
+#endif

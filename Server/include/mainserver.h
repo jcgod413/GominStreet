@@ -1,3 +1,6 @@
+#ifndef __MAINSERVER_H__
+#define __MAINSERVER_H__
+
 #include <pthread.h>
 #include <unistd.h>
 #include <iostream>
@@ -16,7 +19,7 @@
 
 #define PORT	20000
 
-typedef struct game_room{
+typedef struct game_room {
 	struct page_num *next;
 	struct page_num *prev;
 	int player1;
@@ -35,3 +38,5 @@ struct game_room *wait_list = NULL;
 typedef struct thread_param{
 	int client_fd;
 }thread_param;
+
+#endif
