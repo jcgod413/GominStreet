@@ -1,10 +1,14 @@
 #ifndef __USERMANAGER_H__
 #define __USERMANAGER_H__
 
-void login();
-void signup();
-void record();
-void win();
-void loss();
+#include <string.h>
+#include <stdio.h>
+#include "protocol.h"
+
+void login(Message *, Message *);
+void signup(Message *, Message *);
+void record(Message *, Message *);
+void win(Message *, Message *);
+void loss(Message *, Message *);
 
 #endif

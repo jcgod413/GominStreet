@@ -53,9 +53,9 @@ int main(void)
 
 bool validityCheck(Message *message)
 {		
-	printf("Received Message :\n");
+	printf("----- Received Message -----\n");
 	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", message->identifier[i]);
-	printf("\nCategory : %c %c \n", message->category[Major], message->category[Minor]);
+	printf("\nCategory : %d %d \n", message->category[Major], message->category[Minor]);
 	printf("data : %s \n\n", message->data);
 
 	for(int i=0; i<IDENTIFIER_SIZE; i++)	{
@@ -65,40 +65,53 @@ bool validityCheck(Message *message)
 	return true;
 }
 
-void userManager(Message *message)
+void sendResponse(int clientFD, Message *response)
+{
+	write(clientFD, (char*)response, PACKET_SIZE);
+	
+	printf("----- Respond Message  -----\n");
+	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", response->identifier[i]);
+	printf("\nCategory : %d %d \n", response->category[Major], response->category[Minor]);
+	printf("data : %s \n\n", response->data);
+}
+
+void userManager(Message *message, Message *response)
 {
 	switch( message->category[Minor] )	{
-		case User_Login: 	login();	break;
-		case User_Signup: 	signup();	break;
-		case User_Record: 	record();	break;
-		case User_Win: 		win();		break;
-		case User_Loss: 	loss();		break;
+		case User_Login: 	login(message, response);	break;
+		case User_Signup: 	signup(message, response);	break;
+		case User_Record: 	record(message, response);	break;
+		case User_Win: 		win(message, response);		break;
+		case User_Loss: 	loss(message, response);	break;
+		default: printf("error : user category %d\n", message->category[Minor]);
 	}
 }
 
 void roomManager(Message *message)
 {
 	switch( message->category[Minor] )	{
-		case Room_Create: 		createRoom();		break;
-		case Room_List: 		listRoom();			break;
-		case Room_Enter: 		enterRoom();		break;
-		case Room_Exit: 		exitRoom();			break;
-		case Room_Alert_Enter: 	enterAlertRoom();	break;
-		case Room_Alert_Exit: 	exitAlertRoom();	break;
-		case Room_Start: 		startRoom();		break;
+		case Room_Create: 		createRoom(message);	break;
+		case Room_List: 		listRoom(message);		break;
+		case Room_Enter: 		enterRoom(message);		break;
+		case Room_Exit: 		exitRoom(message);		break;
+		case Room_Alert_Enter: 	enterAlertRoom(message);break;
+		case Room_Alert_Exit: 	exitAlertRoom(message);	break;
+		case Room_Start: 		startRoom(message);		break;
+		default: printf("error : room category %d\n", message->category[Minor]);
 	}
 }
 
 void gameManager(Message *message)
 {
 	switch( message->category[Minor] )	{
-		case Game_DiceRoll:		diceRoll(); 	break;
-		case Game_Turn: 		turn();			break;
-		case Game_Move: 		move();			break;
-		case Game_Buy: 			buy();			break;
-		case Game_Pay: 			pay();			break;
-		case Game_GoldKey: 		goldKey();		break;
-		case Game_Isolation: 	isolation();	break;
+		case Game_DiceRoll:		diceRoll(message); 	break;
+		case Game_Turn: 		turn(message);		break;
+		case Game_Move: 		move(message);		break;
+		case Game_Buy: 			buy(message);		break;
+		case Game_Pay: 			pay(message);		break;
+		case Game_GoldKey: 		goldKey(message);	break;
+		case Game_Isolation: 	isolation(message);	break;
+		default: printf("error : manager category %d\n", message->category[Minor]);
 	}
 }
 
@@ -122,11 +135,21 @@ void *communication_thread(void *arg){
 			continue;
 		}
 
+		//내가 받을땐 숫자로 받고, 보낼땐 문자로 보내기.
+
+		Message response;
+		strcpy(response.identifier, "GOMIN");
+		response.category[Major] = message.category[Major];
+		response.category[Minor] = message.category[Minor];
+		
+		printf("enum %d %d\n", Major_User, User_Login);
 		switch( message.category[Major] )	{
-			case Major_User: userManager(&message);	break;
+			case Major_User: userManager(&message, &response);	break;
 			case Major_Room: roomManager(&message);	break;
 			case Major_Game: gameManager(&message);	break;
+			default: printf("error : major category %d\n", message.category[Major]);
 		}
+		sendResponse(clientFD, &response);
 	}
 }
 

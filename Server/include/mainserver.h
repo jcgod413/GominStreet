@@ -17,7 +17,7 @@
 #include "roommanager.h"
 #include "gamemanager.h"
 
-#define PORT	20000
+#define PORT 20001
 
 typedef struct game_room {
 	struct page_num *next;

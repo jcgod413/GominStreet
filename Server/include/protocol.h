@@ -8,7 +8,7 @@
 const char IDENTIFIER[] = "GOMIN";
 
 enum Response   {
-    Response_Fail,
+    Response_Fail='0',
     Response_Success,
 };
 
@@ -18,13 +18,13 @@ enum Category   {
 };
 
 enum MajorCate	{
-	Major_User,
+	Major_User='0',
 	Major_Room,
 	Major_Game,
 };
 
 enum UserCate	{
-	User_Login,
+	User_Login='0',
 	User_Signup,
     User_Record,
     User_Win,
@@ -32,7 +32,7 @@ enum UserCate	{
 };
 
 enum RoomCate	{
-    Room_Create,
+    Room_Create='0',
     Room_List,
     Room_Enter,
     Room_Exit,
@@ -42,7 +42,7 @@ enum RoomCate	{
 };
 
 enum GameCate	{
-    Game_DiceRoll,
+    Game_DiceRoll='0',
     Game_Turn,
     Game_Move,
     Game_Buy,

@@ -1,36 +1,36 @@
 #include "gamemanager.h"
 
-void diceRoll()
+void diceRoll(Message *message)
 {
 
 }
 
-void turn()
+void turn(Message *message)
 {
 
 }
 
-void move()
+void move(Message *message)
 {
 
 }
 
-void buy()
+void buy(Message *message)
 {
 
 }
 
-void pay()
+void pay(Message *message)
 {
 
 }
 
-void goldKey()
+void goldKey(Message *message)
 {
 
 }
 
-void isolation()
+void isolation(Message *message)
 {
     
 }

@@ -1,36 +1,36 @@
 #include "roommanager.h"
 
-void createRoom()
+void createRoom(Message *message)
 {
 
 }
 
-void listRoom()
+void listRoom(Message *message)
 {
 
 }
 
-void enterRoom()
+void enterRoom(Message *message)
 {
 
 }
 
-void exitRoom()
+void exitRoom(Message *message)
 {
 
 }
 
-void enterAlertRoom()
+void enterAlertRoom(Message *message)
 {
 
 }
 
-void exitAlertRoom()
+void exitAlertRoom(Message *message)
 {
 
 }
 
-void startRoom()
+void startRoom(Message *message)
 {
 
 }
