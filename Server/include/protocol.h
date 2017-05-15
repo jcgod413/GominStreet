@@ -2,8 +2,7 @@
 #define IDENTIFIER_SIZE 5
 #define DELIM 	"  "
 
-
-char IDENTIFIER[] = "GOMIN";
+const char IDENTIFIER[] = "GOMIN";
 
 enum Response   {
     Response_Fail,

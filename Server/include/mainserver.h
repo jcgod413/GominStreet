@@ -2,7 +2,17 @@
 #include <unistd.h>
 #include <iostream>
 #include <queue>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <pthread.h>
 #include "protocol.h"
+#include "usermanager.h"
+#include "roommanager.h"
+#include "gamemanager.h"
 
 #define PORT	20000
 

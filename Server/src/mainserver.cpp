@@ -1,11 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <pthread.h>
-#include <iostream>
 #include "mainserver.h"
 
 using namespace std;
@@ -73,6 +65,43 @@ bool validityCheck(Message *message)
 	return true;
 }
 
+void userManager(Message *message)
+{
+	switch( message->category[Minor] )	{
+		case User_Login: 	login();	break;
+		case User_Signup: 	signup();	break;
+		case User_Record: 	record();	break;
+		case User_Win: 		win();		break;
+		case User_Loss: 	loss();		break;
+	}
+}
+
+void roomManager(Message *message)
+{
+	switch( message->category[Minor] )	{
+		case Room_Create: 		createRoom();		break;
+		case Room_List: 		listRoom();			break;
+		case Room_Enter: 		enterRoom();		break;
+		case Room_Exit: 		exitRoom();			break;
+		case Room_Alert_Enter: 	enterAlertRoom();	break;
+		case Room_Alert_Exit: 	exitAlertRoom();	break;
+		case Room_Start: 		startRoom();		break;
+	}
+}
+
+void gameManager(Message *message)
+{
+	switch( message->category[Minor] )	{
+		case Game_DiceRoll:		diceRoll(); 	break;
+		case Game_Turn: 		turn();			break;
+		case Game_Move: 		move();			break;
+		case Game_Buy: 			buy();			break;
+		case Game_Pay: 			pay();			break;
+		case Game_GoldKey: 		goldKey();		break;
+		case Game_Isolation: 	isolation();	break;
+	}
+}
+
 void *communication_thread(void *arg){
 	int clientFD;
 	ssize_t readSize = 0;
@@ -88,9 +117,15 @@ void *communication_thread(void *arg){
 		readSize = 0;
 
 		// message validity check
-		if( validityCheck(message) == false )	{
+		if( validityCheck(&message) == false )	{
 			printf("Error : Invalid message\n");
 			continue;
+		}
+
+		switch( message.category[Major] )	{
+			case Major_User: userManager(&message);	break;
+			case Major_Room: roomManager(&message);	break;
+			case Major_Game: gameManager(&message);	break;
 		}
 	}
 }
