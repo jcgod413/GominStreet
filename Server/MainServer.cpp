@@ -59,30 +59,39 @@ int main(void)
 	}
 }
 
+bool validityCheck(Message *message)
+{		
+	printf("Received Message :\n");
+	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", message->identifier[i]);
+	printf("\nCategory : %c %c \n", message->category[Major], message->category[Minor]);
+	printf("data : %s \n\n", message->data);
+
+	for(int i=0; i<IDENTIFIER_SIZE; i++)	{
+		if(message->identifier[i] != IDENTIFIER[i] )
+			return false;
+	}
+	return true;
+}
+
 void *communication_thread(void *arg){
 	int clientFD;
 	ssize_t readSize = 0;
-	char sendBuffer[PACKET_SIZE];
-	char *save_ptr;
-	char *token;
-	char *id, *password;
-	int is_success;
+	bool isSuccess;
 	Message message;
-	string sendMessage;
-	char testMessage[PACKET_SIZE];
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
 	printf("thread created. client fd : %d\n", clientFD);
 
-	while( (readSize += read(clientFD, (char*)&message, PACKET_SIZE-readSize)) > 0 ) 	{
+	while( (readSize += read(clientFD, (char*)&message, PACKET_SIZE-readSize)) >= 0 ) 	{
 		if( readSize < PACKET_SIZE )
 			continue;
 		readSize = 0;
 
-		printf("Received Message :\n");
-		printf("Identifer : %c%c%c%c%c \n", message.identifier[0], message.identifier[1], message.identifier[2], message.identifier[3], message.identifier[4]);
-		printf("Identifer : %c %c \n", message.category[0], message.category[1]);
-		printf("Identifer : %s \n\n", message.data);
+		// message validity check
+		if( validityCheck(message) == false )	{
+			printf("Error : Invalid message\n");
+			continue;
+		}
 	}
 }
 

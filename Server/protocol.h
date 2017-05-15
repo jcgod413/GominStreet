@@ -1,5 +1,9 @@
 #define PACKET_SIZE 256
+#define IDENTIFIER_SIZE 5
 #define DELIM 	"  "
+
+
+char IDENTIFIER[] = "GOMIN";
 
 enum Response   {
     Response_Fail,
