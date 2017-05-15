@@ -2,14 +2,9 @@
 #include <unistd.h>
 #include <iostream>
 #include <queue>
+#include "protocol.h"
 
-#define DELIM 			"|"
-#define CHK_ID 			1
-#define CREATE_ID 		2
-#define LOGIN 			3
-#define RELOAD 			4
-#define ACCESS_ROOM 	5
-#define CREATE_ROOM 	6
+#define PORT	20000
 
 typedef struct game_room{
 	struct page_num *next;
@@ -19,7 +14,7 @@ typedef struct game_room{
 	int player3;
 	int player4;
 	int status;
-	pthread_t room_id
+	pthread_t room_id;
 	//queue
 	char name[30];
 } game_room;
