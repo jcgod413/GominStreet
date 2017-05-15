@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 
 	strcat(message, " ");
 	strcat(message, passwd);
-  	write(sock, message, strlen(message));
+  	write(sock, message, sizeof(message));
 
 	close(sock);
 	return 0;
