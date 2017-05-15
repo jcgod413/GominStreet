@@ -11,8 +11,7 @@
 using namespace std;
 void *communication_thread(void *);
 
-int main(void)
-{
+int main(void) {
 	struct sockaddr_in server_addr, client_addr;
 	int server_fd, client_fd;
 	socklen_t client_addr_len;
@@ -86,7 +85,7 @@ void *communication_thread(void *arg){
 			has_same_id = 1;
 			send_message = "" + CHK_ID;
 			send_message += DELIM;
-			send_message += has_same_id;//Áßº¹ ¿©ºÎ
+			send_message += has_same_id;
 			strcpy(send_buf, send_message.c_str());
 			write(client_fd, send_buf, sizeof(send_buf));
 			break;
@@ -113,5 +112,5 @@ void *communication_thread(void *arg){
 }
 
 void *game_thread(void *arg){
-	
+
 }
