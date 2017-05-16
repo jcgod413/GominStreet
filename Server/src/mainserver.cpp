@@ -33,7 +33,10 @@ int main(void)
 		printf("listen error\n");
 		exit(1);
 	}
+
+	/* test */
 	printf("Server running ...\n");
+	/* test */
 
 	client_addr_len = sizeof(client_addr);
 	while(1){
@@ -43,12 +46,17 @@ int main(void)
 			printf("accept error\n");
 			continue;
 		}
+
+		/* test */
 		printf("User entered\n");
+		/* test */
 
 		//create thread
 		thread_parameter.client_fd = client_fd;
 		pthread_create(&thread_id, NULL, communication_thread, (void *)&thread_parameter);
 	}
+
+	exit(0);
 }
 
 bool validityCheck(Message *message)
@@ -58,6 +66,7 @@ bool validityCheck(Message *message)
 	printf("\nCategory : %d %d \n", message->category[Major], message->category[Minor]);
 	printf("data : %s \n\n", message->data);
 
+	//check whether identifier is GOMIN or not.
 	for(int i=0; i<IDENTIFIER_SIZE; i++)	{
 		if(message->identifier[i] != IDENTIFIER[i] )
 			return false;
@@ -69,10 +78,13 @@ void sendResponse(int clientFD, Message *response)
 {
 	write(clientFD, (char*)response, PACKET_SIZE);
 
+	/* test */
 	printf("----- Respond Message  -----\n");
 	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", response->identifier[i]);
 	printf("\nCategory : %d %d \n", response->category[Major], response->category[Minor]);
 	printf("data : %s \n\n", response->data);
+	/* test */
+
 }
 
 void userManager(Message *message, Message *response)
@@ -122,7 +134,10 @@ void *communication_thread(void *arg){
 	Message message;
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
+
+	/* test */
 	printf("thread created. client fd : %d\n", clientFD);
+	/* test */
 
 	while( (readSize += read(clientFD, (char*)&message, PACKET_SIZE-readSize)) >= 0 ) 	{
 		if( readSize < PACKET_SIZE )
@@ -154,5 +169,6 @@ void *communication_thread(void *arg){
 }
 
 void *game_thread(void *arg){
-
+	//메시지를 공유하는 큐에서 메시지를 받아옴
+	//받아온 메시지를 프로토콜에 따라 처리
 }
