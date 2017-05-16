@@ -23,7 +23,7 @@
 - <Room_Start> : X
 
 
-<GameCate> 공통 : [Room_Num][User1] [User2] [User3] [User4] [Player]
+<GameCate> 공통 : [Room_Num][User1] [User2] [User3] [User4] [turn]
 	//[Room_Num]에 게임이 진행되는 방번호 저장
 	//[User1] ~ [User4]에 사용자의 DB 인덱스를 저장
 	//N(2 <= N < 4)명이 게임에 참여할 경우 [User(N+1)] ~ [User4]에 -1을 저장
