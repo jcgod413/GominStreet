@@ -13,7 +13,7 @@ void login(Message *message, Message *response)
 
     // Login Success
     if( strcmp(ID, tempID) + strcmp(PW, tempPW) == 0 )  {
-        strcpy(response->data, "1");
+        strcpy(response->data, "1");//응답으로 유저 인덱스
     }
     else    {   // Fail
         strcpy(response->data, "0");
@@ -30,12 +30,12 @@ void signup(Message *message, Message *response)
 
     // ID Check on DB
     // make user on DB when ID is not created
-    
+
     if( strcmp(ID, tempID) == 0 )  {
         strcpy(response->data, "0");
     }
     else    {
-        strcpy(response->data, "1");
+        strcpy(response->data, "1");  // 응답으로 생성된 유저 인덱스
     }
 }
 
