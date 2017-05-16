@@ -2,7 +2,8 @@
 
 void listRoom(Message *message)
 {
-    
+    // game_room game;
+    // sharedMemory.roomList.push_back(game);
 }
 
 void enterRoom(Message *message)
