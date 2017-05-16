@@ -18,6 +18,11 @@ int main(void)
 		exit(1);
 	}
 
+	// obtion
+	int enable = true;
+	if( setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0 )
+		printf("setsockopt(SO_REUSEADDR) failed\n");
+
 	//bind
 	memset(&server_addr, 0x00, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
