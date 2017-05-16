@@ -41,7 +41,7 @@ void signup(Message *message, Message *response)
 
 void record(Message *message, Message *response)
 {
-
+    
 }
 
 void win(Message *message, Message *response)

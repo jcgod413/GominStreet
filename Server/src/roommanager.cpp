@@ -2,7 +2,7 @@
 
 void listRoom(Message *message)
 {
-
+    
 }
 
 void enterRoom(Message *message)

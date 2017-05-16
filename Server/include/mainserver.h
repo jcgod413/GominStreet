@@ -25,7 +25,7 @@ using namespace std;
 struct userInfo	{
 	int number;		// user index
 	int FD;			// file descriptor
-}
+};
 
 struct game_room {
 	pthread_t roomID;	// room id(thread num)
@@ -45,4 +45,13 @@ struct thread_param{
 };
 
 void createRoom(Message *);
+bool validityCheck(Message *);
+void sendResponse(int, Message *);
+void userManager(Message *, Message *);
+void roomManager(Message *);
+void gameManager(Message *);
+void *communication_thread(void *);
+void *game_thread(void *);
+void createRoom(Message *);
+
 #endif
