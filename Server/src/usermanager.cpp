@@ -49,7 +49,7 @@ void win(Message *message, Message *response)
 
 }
 
-void loss(Message *message, Message *response)
+void lose(Message *message, Message *response)
 {
 
 }

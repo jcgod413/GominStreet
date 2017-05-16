@@ -52,7 +52,7 @@ int main(void)
 }
 
 bool validityCheck(Message *message)
-{		
+{
 	printf("----- Received Message -----\n");
 	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", message->identifier[i]);
 	printf("\nCategory : %d %d \n", message->category[Major], message->category[Minor]);
@@ -68,7 +68,7 @@ bool validityCheck(Message *message)
 void sendResponse(int clientFD, Message *response)
 {
 	write(clientFD, (char*)response, PACKET_SIZE);
-	
+
 	printf("----- Respond Message  -----\n");
 	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", response->identifier[i]);
 	printf("\nCategory : %d %d \n", response->category[Major], response->category[Minor]);
@@ -82,7 +82,7 @@ void userManager(Message *message, Message *response)
 		case User_Signup: 	signup(message, response);	break;
 		case User_Record: 	record(message, response);	break;
 		case User_Win: 		win(message, response);		break;
-		case User_Loss: 	loss(message, response);	break;
+		case User_Lose: 	lose(message, response);	break;
 		default: printf("error : user category %d\n", message->category[Minor]);
 	}
 }
@@ -141,7 +141,7 @@ void *communication_thread(void *arg){
 		strcpy(response.identifier, "GOMIN");
 		response.category[Major] = message.category[Major];
 		response.category[Minor] = message.category[Minor];
-		
+
 		printf("enum %d %d\n", Major_User, User_Login);
 		switch( message.category[Major] )	{
 			case Major_User: userManager(&message, &response);	break;
@@ -154,5 +154,5 @@ void *communication_thread(void *arg){
 }
 
 void *game_thread(void *arg){
-	
+
 }

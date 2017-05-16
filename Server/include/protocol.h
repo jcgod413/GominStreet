@@ -28,7 +28,7 @@ enum UserCate	{
 	User_Signup,
     User_Record,
     User_Win,
-    User_Loss,
+    User_Lose,
 };
 
 enum RoomCate	{
@@ -54,7 +54,7 @@ enum GameCate	{
 struct Message  {
     char identifier[5];
     char category[2];
-    char padding; 
+    char padding;
     char data[248];
 };
 

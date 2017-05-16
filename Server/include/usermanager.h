@@ -9,6 +9,6 @@ void login(Message *, Message *);
 void signup(Message *, Message *);
 void record(Message *, Message *);
 void win(Message *, Message *);
-void loss(Message *, Message *);
+void lose(Message *, Message *);
 
 #endif
