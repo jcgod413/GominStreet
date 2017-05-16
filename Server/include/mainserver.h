@@ -39,4 +39,5 @@ typedef struct thread_param{
 	int client_fd;
 }thread_param;
 
+void createRoom(Message *);
 #endif

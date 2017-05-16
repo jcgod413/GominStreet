@@ -177,3 +177,12 @@ void *game_thread(void *arg){
 	//메시지를 공유하는 큐에서 메시지를 받아옴
 	//받아온 메시지를 프로토콜에 따라 처리
 }
+
+void createRoom(Message *message) {
+	pthread_t thread_id;
+  //create game thread
+  /*
+  thread_parameter.client_fd = client_fd;
+  pthread_create(&thread_id, NULL, game_thread, (void *)&thread_parameter);
+  */
+}

@@ -4,7 +4,6 @@
 #include <string.h>
 #include "protocol.h"
 
-void createRoom(Message *);
 void listRoom(Message *);
 void enterRoom(Message *);
 void exitRoom(Message *);
