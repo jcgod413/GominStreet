@@ -8,9 +8,9 @@
 #include <pthread.h>
 #include <sqlite3.h>
 #include <iostream>
-//#include "protocol.h"
 
 #include "usermanager.h"
+
 using namespace std;
 
 enum DB_USER  {
