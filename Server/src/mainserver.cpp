@@ -191,6 +191,9 @@ void *communication_thread(void *arg){
 	}
 }
 
+
+pthread_mutex_t mutex_lock;
+
 void *game_thread(void *arg){
 	game_room game_room_info;
 
@@ -198,15 +201,15 @@ void *game_thread(void *arg){
 	game_room_info = *(game_room *)arg;
 	sharedMemory.roomList.push_back(game_room_info);
 
+	pthread_mutex_init(&mutex_lock, NULL);
 	while(1) {
-		//동기화 문제 해결(mutex)
+		pthread_mutex_lock(&mutex_lock);
 		// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
 		//유저 수가 0
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
 
 		// 요청 정보 파싱해서 해당 동작
-
-
+		pthread_mutex_unlock(&mutex_lock);
 	}
 }
 

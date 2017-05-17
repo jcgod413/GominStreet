@@ -16,7 +16,7 @@ char tempPW[] = "street";
 void login(Message *message, Message *response)
 {
     char *ID, *PW;
-    char *save_ptr;
+    char *save_ptr;
 
     ID = strtok_r(message->data, DELIM, &save_ptr);
     PW = strtok_r(NULL, DELIM, &save_ptr);
@@ -33,7 +33,7 @@ void login(Message *message, Message *response)
 void signup(Message *message, Message *response)
 {
     char *ID, *PW;
-    char *save_ptr;
+    char *save_ptr;
 
     ID = strtok_r(message->data, DELIM, &save_ptr);
     PW = strtok_r(NULL, DELIM, &save_ptr);
