@@ -219,7 +219,7 @@ void createRoom(Message *message) {
 	user_idx = strtok_r(message->data, DELIM, &save_ptr);
 	FD = strtok_r(NULL, DELIM, &save_ptr);
 
-	user_info.number = atoi(user_info);
+	user_info.number = atoi(user_idx);
 	user_info.FD = atoi(FD);
 
 	game_room_info.status = WAIT;
