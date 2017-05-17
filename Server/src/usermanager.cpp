@@ -74,17 +74,12 @@ bool query(string sql)
 
 void login(Message *message, Message *response)
 {
-<<<<<<< Updated upstream
-    char *ID, *PW;
-    char *save_ptr;
-=======
     if( rc == 0 )   {   initDB(); }
 
     char *save_ptr;
     char *ID = strtok_r(message->data, DELIM, &save_ptr);
     char *PW = strtok_r(NULL, DELIM, &save_ptr);
 
->>>>>>> Stashed changes
 
     string sql = "SELECT * FROM USER WHERE ID='" + string(ID) + "' AND PW='" + string(PW) + "'";
 
@@ -100,16 +95,11 @@ void login(Message *message, Message *response)
 
 void signup(Message *message, Message *response)
 {
-<<<<<<< Updated upstream
-    char *ID, *PW;
-    char *save_ptr;
-=======
     if( rc == 0 )   {   initDB(); }
 
     char *save_ptr;
     char *ID = strtok_r(message->data, DELIM, &save_ptr);
     char *PW = strtok_r(NULL, DELIM, &save_ptr);
->>>>>>> Stashed changes
 
     string sql = "SELECT * FROM USER WHERE ID='" + string(ID) + "'";
 
