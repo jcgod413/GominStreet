@@ -46,8 +46,6 @@ public class Start_scene : MonoBehaviour {
 
         //receive
         string return_message = Socket_script.receive_message();
-        Debug.Log("return message : "+return_message);
-        Debug.Log("|compareto:"+return_message.CompareTo("1"));
 
         if (return_message == "1")
         {
@@ -89,7 +87,7 @@ public class Start_scene : MonoBehaviour {
         //receive
         string return_message = Socket_script.receive_message();
         Debug.Log(return_message);
-        if (return_message.Equals("0"))//중복 ID 존재
+        if (return_message == "0")//중복 ID 존재
         {
             popup_name = "Error";
             popup_text = "중복된 아이디가 있습니다.";

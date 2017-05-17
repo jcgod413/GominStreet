@@ -154,6 +154,7 @@ public class Socket_script : MonoBehaviour {
         {
             return_byte_arr[i-8] = message[i];
         }
+        Debug.Log("return"+return_byte_arr[0]);
         return return_byte_arr;
     }
 }

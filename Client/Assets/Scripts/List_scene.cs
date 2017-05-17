@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class List_scene : MonoBehaviour {
     private bool showPopUp = false;
@@ -9,6 +10,16 @@ public class List_scene : MonoBehaviour {
     private int popup_x = 300;
     private int popup_y = 140;
     private string game_name = "";
+
+    public GameObject RoomObject;
+    public Transform Content;
+    public List<Room_Object> Room_List;
+
+    void Start()
+    {
+        Debug.Log("Start()");
+        this.Binding();
+    }
 
     public void create_game()
     {
@@ -65,6 +76,45 @@ public class List_scene : MonoBehaviour {
         if (GUI.Button(new Rect(button_x - button_size_x, button_y, button_size_x, button_size_y), "취소"))
         {
             showPopUp = false;
+        }
+    }
+
+    public void reload_list()
+    {
+        Room_Object room_obj = new Room_Object();
+        room_obj.Name = "aaa";
+        room_obj.Player_Num = "(1 / 4)";
+        room_obj.Room_ID = 1;
+        Room_List.Add(room_obj);
+        this.Binding();
+        Debug.Log("click");
+    }
+
+    private void Binding()
+    {
+        GameObject btn_room_temp;
+        Room_Object item_object_temp;
+        Debug.Log("Binding");
+
+        Transform[] child;
+        child = new Transform[transform.childCount];
+        int i = 0;
+
+        foreach (Transform t in Content)
+        {
+            Destroy(t.gameObject);
+        }
+
+        foreach (Room_Object room_obj in this.Room_List)
+        {
+            btn_room_temp = Instantiate(this.RoomObject) as GameObject;
+            item_object_temp = btn_room_temp.GetComponent<Room_Object>();
+
+            item_object_temp.Name = room_obj.Name;
+            item_object_temp.Player_Num = room_obj.Player_Num;
+            item_object_temp.Room_ID = room_obj.Room_ID;
+
+            item_object_temp.transform.SetParent(this.Content);
         }
     }
 }
