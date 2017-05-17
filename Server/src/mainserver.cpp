@@ -192,12 +192,10 @@ void *communication_thread(void *arg){
 }
 
 void *game_thread(void *arg){
-	game_room game_room_info = *(game_room *)arg;
+	game_room game_room_info;
 
-	//store game thread's id
-	game_room_info.roomID = pthread_self();
-
-	//store game_room_info to sharedMemory
+	((game_room *)arg)->roomID = pthread_self();
+	game_room_info = *(game_room *)arg;
 	sharedMemory.roomList.push_back(game_room_info);
 
 	while(1) {//유저 수가 0
@@ -215,14 +213,27 @@ void *game_thread(void *arg){
 void createRoom(Message *message) {
 	pthread_t game_thread_id;
 	game_room game_room_info;
-	userInfo user_info = {0, 0}; // ** 유저인덱스와 유저 파일디스크립터를 입력받아야 함 **
+	userInfo user_info;
+	char *user_idx, *FD, *save_ptr;
 
-	//initialize game_room_info
+	user_idx = strtok_r(message->data, DELIM, &save_ptr);
+	FD = strtok_r(NULL, DELIM, &save_ptr);
+
+	user_info.number = atoi(user_info);
+	user_info.FD = atoi(FD);
+
 	game_room_info.status = WAIT;
 	game_room_info.turn = 0;
-	game_room_info.userCount = 1;
+
+	if(!game_room_info.userList.empty())
+		game_room_info.userList.clear();
 	game_room_info.userList.push_back(user_info);
-	//game_room_info.messageQueue.push(*message);
+
+	game_room_info.roomLeader = user_info.number;
+	game_room_info.userCount = game_room_info.userList.size();
+
+	while(!game_room_info.messageQueue.empty())
+		game_room_info.messageQueue.pop();
 
   //create game thread
   pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);

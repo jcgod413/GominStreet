@@ -6,7 +6,6 @@
 #include <list>
 #include <queue>
 #include <pthread.h>
-//#include "protocol.h"
 #include "gamemanager.h"
 using namespace std;
 
