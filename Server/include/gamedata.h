@@ -8,21 +8,21 @@
 #include "protocol.h"
 using namespace std;
 
-class userInfo	{
+struct userInfo	{
 	int number;		// user index
 	int FD;			// file descriptor
 };
 
-class game_room {
+struct game_room {
 	pthread_t roomID;	// room id(thread num)
 	int status;			// game status (wait, play)
 	int turn;			// current turn user index
-
+	int userNumber; //Number of users
 	list<userInfo> userList;		// user list
 	queue<Message> messageQueue;	// message queue (row message)
 };
 
-class shared_memory	{
+struct shared_memory	{
 	list<game_room> roomList;
 } sharedMemory;
 
