@@ -121,10 +121,10 @@ void userManager(Message *message, Message *response)
 	}
 }
 
-void roomManager(Message *message)
+void roomManager(Message *message, /**/)
 {
 	switch( message->category[Minor] )	{
-		case Room_Create: 		createRoom(message);	break;
+		case Room_Create: 		createRoom(message, /**/);	break;
 		case Room_List: 		listRoom(message);		break;
 		case Room_Enter: 		enterRoom(message);		break;
 		case Room_Exit: 		exitRoom(message);		break;
@@ -203,10 +203,33 @@ void *game_thread(void *arg){
 
 	pthread_mutex_init(&mutex_lock, NULL);
 	while(1) {
+		game_room *current_game;
 		pthread_mutex_lock(&mutex_lock);
+
 		// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
-		//유저 수가 0
+		for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
+			//미완성
+			if(roo) {
+			current_game = &*it;
+			break;
+		}
+		}
+
+		//모두 나가면 게임 스레드 종료
+		if(current_game->userCount == 0) {
+			pthread_mutex_unlock(&mutex_lock);
+			pthread_exit((void *)0);
+		}
+
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
+		if(current_game->messageQueue.size() > 0) {
+
+		}
+		else {
+			while(current_game->messageQueue.empty()) {
+
+			}
+		}
 
 		// 요청 정보 파싱해서 해당 동작
 		pthread_mutex_unlock(&mutex_lock);
@@ -240,6 +263,7 @@ void createRoom(Message *message) {
 
   //create game thread
   pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
+	//for =>
 }
 
 #endif
