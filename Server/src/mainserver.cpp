@@ -183,7 +183,8 @@ void *communication_thread(void *arg){
 		switch( message.category[Major] )	{
 			case Major_User: userManager(&message, &response);	break;
 			case Major_Room: roomManager(&message);	break;
-			case Major_Game: gameManager(&message);	break;
+			case Major_Game: //방번호 파싱해서 sharedMemory messageQueue에 push
+			//gameManager(&message);	break;
 			default: printf("error : major category %d\n", message.category[Major]);
 		}
 		sendResponse(clientFD, &response);
@@ -198,8 +199,15 @@ void *game_thread(void *arg){
 
 	//store game_room_info to sharedMemory
 	sharedMemory.roomList.push_back(game_room_info);
-	
-	while(1) {
+
+	while(1) {//유저 수가 0
+		//동기화 문제 해결(mutex)
+		// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
+
+		// 해당 방에 메시지 들어올때까지 블로킹(무한)
+
+		// 요청 정보 파싱해서 해당 동작
+
 
 	}
 }
@@ -214,7 +222,7 @@ void createRoom(Message *message) {
 	game_room_info.turn = 0;
 	game_room_info.userCount = 1;
 	game_room_info.userList.push_back(user_info);
-	game_room_info.messageQueue.push(*message);
+	//game_room_info.messageQueue.push(*message);
 
   //create game thread
   pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
