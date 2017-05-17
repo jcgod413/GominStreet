@@ -8,6 +8,8 @@
 #include "protocol.h"
 using namespace std;
 
+enum game_status {WAIT, PLAY};
+
 struct userInfo	{
 	int number;		// user index
 	int FD;			// file descriptor
@@ -17,9 +19,9 @@ struct game_room {
 	pthread_t roomID;	// room id(thread num)
 	int status;			// game status (wait, play)
 	int turn;			// current turn user index
-	int userNumber; //Number of users
+	int userCount; //Number of users
 	list<userInfo> userList;		// user list
-	queue<Message> messageQueue;	// message queue (row message)
+	queue<Message> messageQueue;	// message queue (raw message)
 };
 
 struct shared_memory	{

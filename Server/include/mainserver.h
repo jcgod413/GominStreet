@@ -18,6 +18,4 @@ void *communication_thread(void *);
 void *game_thread(void *);
 void createRoom(Message *);
 
-// extern shared_memory sharedMemory;
-
 #endif

@@ -4,22 +4,18 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <iostream>
-//#include <queue>
-//#include <list>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-//#include <pthread.h>
-//#include "protocol.h"
 #include "usermanager.h"
 #include "roommanager.h"
 #include "gamemanager.h"
 #include "gamedata.h"
-
 #include "mainserver.h"
+
 using namespace std;
 
 void *communication_thread(void *);
@@ -39,7 +35,7 @@ int main(void)
 		exit(1);
 	}
 
-	// obtion
+	// option
 	int enable = true;
 	if( setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0 )
 		printf("setsockopt(SO_REUSEADDR) failed\n");
@@ -195,17 +191,33 @@ void *communication_thread(void *arg){
 }
 
 void *game_thread(void *arg){
-	//메시지를 공유하는 큐에서 메시지를 받아옴
-	//받아온 메시지를 프로토콜에 따라 처리
+	game_room game_room_info = *(game_room *)arg;
+
+	//store game thread's id
+	game_room_info.roomID = pthread_self();
+
+	//store game_room_info to sharedMemory
+	sharedMemory.roomList.push_back(game_room_info);
+	
+	while(1) {
+
+	}
 }
 
 void createRoom(Message *message) {
-	pthread_t thread_id;
+	pthread_t game_thread_id;
+	game_room game_room_info;
+	userInfo user_info = {0, 0}; // ** 유저인덱스와 유저 파일디스크립터를 입력받아야 함 **
+
+	//initialize game_room_info
+	game_room_info.status = WAIT;
+	game_room_info.turn = 0;
+	game_room_info.userCount = 1;
+	game_room_info.userList.push_back(user_info);
+	game_room_info.messageQueue.push(*message);
+
   //create game thread
-  /*
-  thread_parameter.client_fd = client_fd;
-  pthread_create(&thread_id, NULL, game_thread, (void *)&thread_parameter);
-  */
+  pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
 }
 
 #endif
