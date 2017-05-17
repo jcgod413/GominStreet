@@ -1,20 +1,28 @@
+#ifndef __GAMEMANAGER_CPP__
+#define __GAMEMANAGER_CPP__
+
+#include <string.h>
+#include <list>
+#include <queue>
+#include <pthread.h>
+//#include "protocol.h"
 #include "gamemanager.h"
-
-
-
+using namespace std;
+/*
 void common_message(Message *message, char *user[], char *player, char *save_ptr) {
   user[0] = strtok_r(message->data, DELIM, &save_ptr);
   for(int i = 1; i < 4; i++)
     user[i] = strtok_r(NULL, DELIM, &save_ptr);
   player = strtok_r(NULL, DELIM, &save_ptr);
-
 }
-
+*/
 void diceRoll(Message *message)
 {
+  /*
   char *user[4], *player;
   char *save_ptr;
   common_message(message, user, player, save_ptr);
+  */
 
   /*
 
@@ -57,3 +65,5 @@ void isolation(Message *message)
 {
 
 }
+
+#endif

@@ -1,5 +1,15 @@
+#ifndef __USERMANAGER_CPP__
+#define __USERMANAGER_CPP__
+
+#include <string.h>
+#include <list>
+#include <queue>
+#include <pthread.h>
+//#include "protocol.h"
+
 #include "usermanager.h"
 
+using namespace std;
 char tempID[] = "gomin";
 char tempPW[] = "street";
 
@@ -41,7 +51,7 @@ void signup(Message *message, Message *response)
 
 void record(Message *message, Message *response)
 {
-    
+
 }
 
 void win(Message *message, Message *response)
@@ -53,3 +63,5 @@ void lose(Message *message, Message *response)
 {
 
 }
+
+#endif

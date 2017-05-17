@@ -1,8 +1,8 @@
 #ifndef __ROOMMANAGER_H__
 #define __ROOMMANAGER_H__
 
-#include "mainserver.h"
 // #include "gamemanager.h"
+#include "protocol.h"
 
 void listRoom(Message *);
 void enterRoom(Message *);

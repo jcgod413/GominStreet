@@ -1,3 +1,7 @@
+#ifndef __ROOMMANAGER_CPP__
+#define __ROOMMANAGER_CPP__
+
+#include "mainserver.h"
 #include "roommanager.h"
 
 void listRoom(Message *message)
@@ -30,3 +34,5 @@ void startRoom(Message *message)
 {
 
 }
+
+#endif

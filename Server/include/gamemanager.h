@@ -1,13 +1,7 @@
 #ifndef __GAMEMANAGER_H__
 #define __GAMEMANAGER_H__
 
-#include <string.h>
-#include <list>
-#include <queue>
-#include <pthread.h>
 #include "protocol.h"
-
-using namespace std;
 
 void diceRoll(Message *);
 void turn(Message *);

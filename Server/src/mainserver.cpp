@@ -1,24 +1,27 @@
+#ifndef __MAINSERVER_CPP__
+#define __MAINSERVER_CPP__
+
 #include <pthread.h>
 #include <unistd.h>
 #include <iostream>
-#include <queue>
-#include <list>
+//#include <queue>
+//#include <list>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <pthread.h>
-#include "protocol.h"
+//#include <pthread.h>
+//#include "protocol.h"
 #include "usermanager.h"
 #include "roommanager.h"
 #include "gamemanager.h"
 #include "gamedata.h"
 
 #include "mainserver.h"
-
 using namespace std;
+
 void *communication_thread(void *);
 
 int main(void)
@@ -204,3 +207,5 @@ void createRoom(Message *message) {
   pthread_create(&thread_id, NULL, game_thread, (void *)&thread_parameter);
   */
 }
+
+#endif
