@@ -20,6 +20,7 @@ struct game_room {
 	int status;			// game status (wait, play)
 	int turn;			// current turn user index
 	int userCount; //Number of users
+	int roomLeader; //방장
 	list<userInfo> userList;		// user list
 	queue<Message> messageQueue;	// message queue (raw message)
 };
