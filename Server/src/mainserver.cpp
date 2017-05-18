@@ -121,16 +121,16 @@ void userManager(Message *message, Message *response)
 	}
 }
 
-void roomManager(Message *message, /**/)
+void roomManager(Message *message, Message *response)
 {
 	switch( message->category[Minor] )	{
-		case Room_Create: 		createRoom(message, /**/);	break;
-		case Room_List: 		listRoom(message);		break;
-		case Room_Enter: 		enterRoom(message);		break;
-		case Room_Exit: 		exitRoom(message);		break;
-		case Room_Alert_Enter: 	enterAlertRoom(message);break;
-		case Room_Alert_Exit: 	exitAlertRoom(message);	break;
-		case Room_Start: 		startRoom(message);		break;
+		// case Room_Create: 		createRoom(message, response);		break;
+		case Room_List: 		listRoom(message, response);		break;
+		case Room_Enter: 		enterRoom(message, response);		break;
+		case Room_Exit: 		exitRoom(message, response);		break;
+		case Room_Alert_Enter: 	enterAlertRoom(message, response);	break;
+		case Room_Alert_Exit: 	exitAlertRoom(message, response);	break;
+		case Room_Start: 		startRoom(message, response);		break;
 		default: printf("error : room category %d\n", message->category[Minor]);
 	}
 }
@@ -182,7 +182,7 @@ void *communication_thread(void *arg){
 		printf("enum %d %d\n", Major_User, User_Login);
 		switch( message.category[Major] )	{
 			case Major_User: userManager(&message, &response);	break;
-			case Major_Room: roomManager(&message);	break;
+			case Major_Room: roomManager(&message, &response);	break;
 			case Major_Game: //방번호 파싱해서 sharedMemory messageQueue에 push
 			//gameManager(&message);	break;
 			default: printf("error : major category %d\n", message.category[Major]);
@@ -197,7 +197,9 @@ pthread_mutex_t mutex_lock;
 void *game_thread(void *arg){
 	game_room game_room_info;
 
-	((game_room *)arg)->roomID = pthread_self();
+	// ((game_room *)arg)->roomID = pthread_self();
+	((game_room *)arg)->roomID = 0;		// thread 번호 넣어줘야 함
+	
 	game_room_info = *(game_room *)arg;
 	sharedMemory.roomList.push_back(game_room_info);
 
@@ -209,8 +211,8 @@ void *game_thread(void *arg){
 		// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
 		for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
 			//미완성
-			if(roo) {
-			current_game = &*it;
+			// if(roo) {
+			// current_game = &*it;
 			break;
 		}
 		}
