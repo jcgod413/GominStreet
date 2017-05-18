@@ -18,8 +18,7 @@
 
 using namespace std;
 
-void *communication_thread(void *);
-
+shared_memory sharedMemory;
 int main(void)
 {
 	struct sockaddr_in server_addr, client_addr;
@@ -152,7 +151,7 @@ void gameManager(Message *message)
 void *communication_thread(void *arg){
 	int clientFD;
 	ssize_t readSize = 0;
-	bool isSuccess;
+	//bool isSuccess;
 	Message message;
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
@@ -181,10 +180,19 @@ void *communication_thread(void *arg){
 
 		printf("enum %d %d\n", Major_User, User_Login);
 		switch( message.category[Major] )	{
-			case Major_User: userManager(&message, &response);	break;
-			case Major_Room: roomManager(&message, &response);	break;
-			case Major_Game: //방번호 파싱해서 sharedMemory messageQueue에 push
-			//gameManager(&message);	break;
+			case Major_User:
+				userManager(&message, &response);
+				break;
+
+			case Major_Room:
+				roomManager(&message, &response);
+				break;
+
+			case Major_Game:
+
+				//방번호 파싱해서 sharedMemory messageQueue에 push
+				//gameManager(&message);
+				break;
 			default: printf("error : major category %d\n", message.category[Major]);
 		}
 		sendResponse(clientFD, &response);
@@ -199,7 +207,7 @@ void *game_thread(void *arg){
 
 	// ((game_room *)arg)->roomID = pthread_self();
 	((game_room *)arg)->roomID = 0;		// thread 번호 넣어줘야 함
-	
+
 	game_room_info = *(game_room *)arg;
 	sharedMemory.roomList.push_back(game_room_info);
 
@@ -213,8 +221,8 @@ void *game_thread(void *arg){
 			//미완성
 			// if(roo) {
 			// current_game = &*it;
-			break;
-		}
+				break;
+			//}
 		}
 
 		//모두 나가면 게임 스레드 종료

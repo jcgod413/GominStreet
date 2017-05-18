@@ -8,6 +8,8 @@
 #include <list>
 using namespace std;
 
+extern shared_memory sharedMemory;
+
 void listRoom(Message *message, Message *response)
 {
     string room = to_string(sharedMemory.roomList.size()) + " ";

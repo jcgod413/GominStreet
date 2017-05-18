@@ -28,6 +28,6 @@ struct game_room {
 
 struct shared_memory	{
 	list<game_room> roomList;
-} sharedMemory;
+};
 
 #endif

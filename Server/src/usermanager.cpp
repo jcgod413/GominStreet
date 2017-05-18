@@ -35,7 +35,7 @@ sqlite3 *db;
 char *zErrMsg = 0;
 int rc;
 
-static int callback(void *NotUsed, int argc, char **argv, char **azColName) 
+static int callback(void *NotUsed, int argc, char **argv, char **azColName)
 {
     memset(userInfo.num, 0, sizeof(userInfo.num));
     memset(userInfo.id, 0, sizeof(userInfo.id));
@@ -47,7 +47,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName)
     strcpy(userInfo.pw, argv[PW]);
     userInfo.win = atoi(argv[WIN]);
     userInfo.lose = atoi(argv[LOSE]);
-    
+
     isUserUpdated = true;
 
     return 0;
@@ -82,7 +82,7 @@ void login(Message *message, Message *response)
 {
     if( rc == 0 )   {   initDB();   }
 
-    char *save_ptr;
+    char *save_ptr;
     char *ID = strtok_r(message->data, DELIM, &save_ptr);
     char *PW = strtok_r(NULL, DELIM, &save_ptr);
 
@@ -103,7 +103,7 @@ void signup(Message *message, Message *response)
 {
     if( rc == 0 )   {   initDB();   }
 
-    char *save_ptr;
+    char *save_ptr;
     char *ID = strtok_r(message->data, DELIM, &save_ptr);
     char *PW = strtok_r(NULL, DELIM, &save_ptr);
 
@@ -130,7 +130,7 @@ void record(Message *message, Message *response)
 {
     if( rc == 0 )   {   initDB();   }
 
-    char *save_ptr;
+    char *save_ptr;
     char *num = strtok_r(message->data, DELIM, &save_ptr);
 
     string sql = "SELECT * FROM USER WHERE num='" + string(num) + "'";
@@ -148,7 +148,7 @@ void win(Message *message, Message *response)
 {
     if( rc == 0 )   {   initDB();   }
 
-    char *save_ptr;
+    char *save_ptr;
     char *num = strtok_r(message->data, DELIM, &save_ptr);
 
     string sql = "SELECT * FROM USER WHERE num='" + string(num) + "'";
@@ -170,7 +170,7 @@ void lose(Message *message, Message *response)
 {
     if( rc == 0 )   {   initDB();   }
 
-    char *save_ptr;
+    char *save_ptr;
     char *num = strtok_r(message->data, DELIM, &save_ptr);
 
     string sql = "SELECT * FROM USER WHERE num='" + string(num) + "'";

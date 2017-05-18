@@ -12,6 +12,4 @@ void enterAlertRoom(Message *, Message *);
 void exitAlertRoom(Message *, Message *);
 void startRoom(Message *, Message *);
 
-// extern shared_memory sharedMemory;
-
 #endif
