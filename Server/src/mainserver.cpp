@@ -164,7 +164,7 @@ void *communication_thread(void *arg){
 			continue;
 		readSize = 0;
 
-		// message validity check
+		//헤더가 GOMIN인지 체크
 		if( validityCheck(&message) == false )	{
 			printf("Error : Invalid message\n");
 			continue;
@@ -179,6 +179,7 @@ void *communication_thread(void *arg){
 
 		printf("enum %d %d\n", Major_User, User_Login);
 
+		//Major_Game에서 필요
 		char *save_ptr = NULL, *roomID_str = NULL;
 		int roomID = 0;
 		bool isFound = false;
@@ -193,18 +194,19 @@ void *communication_thread(void *arg){
 				break;
 
 			case Major_Game:
+				//방번호를 추출함
 			 	roomID_str = strtok_r(message.data, DELIM, &save_ptr);
 				roomID = atoi(roomID_str);
 				isFound = false;
 
+				//방번호를 찾을 때까지 무한반복
 				while(!isFound)
 					for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
-						if(it->roomID == roomID) {
-							it->messageQueue.push(message);
+						if(it->roomID == roomID) {//방번호를 찾았을 때
+							it->messageQueue.push(message);//공유자원의 큐에 메시지를 넘겨줌
 							isFound = true;
 							break;
 						}
-				//gameManager(&message);
 				break;
 
 			default:
@@ -249,11 +251,11 @@ void *game_thread(void *arg){
 
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
 		if(current_game->messageQueue.size() > 0) {
-
+			//gameManager(&message);
 		}
 		else {
 			while(current_game->messageQueue.empty()) {
-
+				//gameManager(&message);
 			}
 		}
 
