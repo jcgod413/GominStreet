@@ -151,7 +151,6 @@ void gameManager(Message *message)
 void *communication_thread(void *arg){
 	int clientFD;
 	ssize_t readSize = 0;
-	//bool isSuccess;
 	Message message;
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
@@ -179,6 +178,11 @@ void *communication_thread(void *arg){
 		response.category[Minor] = message.category[Minor];
 
 		printf("enum %d %d\n", Major_User, User_Login);
+
+		char *save_ptr = NULL, *roomID_str = NULL;
+		int roomID = 0;
+		bool isFound = false;
+
 		switch( message.category[Major] )	{
 			case Major_User:
 				userManager(&message, &response);
@@ -189,11 +193,23 @@ void *communication_thread(void *arg){
 				break;
 
 			case Major_Game:
+			 	roomID_str = strtok_r(message.data, DELIM, &save_ptr);
+				roomID = atoi(roomID_str);
+				isFound = false;
 
-				//방번호 파싱해서 sharedMemory messageQueue에 push
+				while(!isFound)
+					for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
+						if(it->roomID == roomID) {
+							it->messageQueue.push(message);
+							isFound = true;
+							break;
+						}
 				//gameManager(&message);
 				break;
-			default: printf("error : major category %d\n", message.category[Major]);
+
+			default:
+				printf("error : major category %d\n", message.category[Major]);
+				break;
 		}
 		sendResponse(clientFD, &response);
 	}
