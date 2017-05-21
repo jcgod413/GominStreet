@@ -17,12 +17,11 @@
 #include "gamedata.h"
 #include "mainserver.h"
 #include "protocol.h"
-
-#define MAX_ROOM 1024
 using namespace std;
 
 shared_memory sharedMemory;
 bool room_number[MAX_ROOM];
+pthread_mutex_t mutex_lock;
 
 int main(void)
 {
@@ -222,9 +221,6 @@ void *communication_thread(void *arg){
 		sendResponse(clientFD, &response);
 	}
 }
-
-
-pthread_mutex_t mutex_lock;
 
 void *game_thread(void *arg){
 	pthread_mutex_init(&mutex_lock, NULL);

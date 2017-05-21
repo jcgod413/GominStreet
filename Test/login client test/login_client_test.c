@@ -11,7 +11,7 @@ void error_handling(char *message);
 
 int main(int argc, char *argv[]) {
 	int sock;
-	char message[BUF_SIZE];
+	char message[BUF_SIZE], response[BUF_SIZE];
 	char userid[LOGIN_SIZE];
 	char passwd[LOGIN_SIZE];
 	//int str_len;
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 		error_handling("connect() error!");
 	else
 		puts("Connected...........");
-	
+
 	memset(message, 0, sizeof(message));
 	memset(userid, 0, sizeof(userid));
 	memset(passwd, 0, sizeof(passwd));
@@ -52,8 +52,9 @@ int main(int argc, char *argv[]) {
 
 	strcat(message, " ");
 	strcat(message, passwd);
-  	write(sock, message, sizeof(message));
+  write(sock, message, sizeof(message));
 
+	ssize_t len = read(sock, re)
 	close(sock);
 	return 0;
 }
