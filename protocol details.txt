@@ -10,7 +10,7 @@
 - <Room_List> : 미정
 - <Room_Enter> : [Room_Number] [User] [FD]
 - <Room_Exit> : [Room_Number] [User]
-- <Room_Alert_Enter> : [Room_Number] [User] [User1] [User2] [User3] [User4]
+- <Room_Alert_Enter> : (C->S)[Room_Number] [User] [User1] [User2] [User3] [User4] / (S->C) [User]
 - <Room_Alert_Exit> : [Room_Number] [User] [User1] [User2] [User3] [User4]
 - <Room_Start> : [Room_Number]
 
