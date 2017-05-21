@@ -8,7 +8,7 @@ INCLUDE_OPT := -I $(INCLUDE_PATH)
 LIBRARY_OPT := -lm -lpthread -lsqlite3
 RENAME_OPT := -o ./output/$(FILENAME)
 DEBUG_OPT := -DDEBUG -g
-OPT:=$(RENAME_OPT) $(INCLUDE_OPT) $(LIBRARY_OPT) -W -Wall
+OPT:=$(RENAME_OPT) $(INCLUDE_OPT) $(LIBRARY_OPT) -W -Wall -Wextra
 
 all : src include
 	$(CC) $(SRC) $(OPT)

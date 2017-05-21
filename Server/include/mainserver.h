@@ -8,7 +8,7 @@ struct thread_param{
 	int client_fd;
 };
 
-void createRoom(Message *);
+void createRoom(Message *, Message *);
 bool validityCheck(Message *);
 void sendResponse(int, Message *);
 void userManager(Message *, Message *);

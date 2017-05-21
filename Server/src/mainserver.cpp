@@ -10,15 +10,20 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
 #include "usermanager.h"
 #include "roommanager.h"
 #include "gamemanager.h"
 #include "gamedata.h"
 #include "mainserver.h"
+#include "protocol.h"
 
+#define MAX_ROOM 1024
 using namespace std;
 
 shared_memory sharedMemory;
+bool room_number[MAX_ROOM];
+
 int main(void)
 {
 	struct sockaddr_in server_addr, client_addr;
@@ -60,6 +65,7 @@ int main(void)
 	/* test */
 
 	client_addr_len = sizeof(client_addr);
+	memset(room_number, 0, sizeof(room_number));
 	while(1){
 		//accept
 		client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_addr_len);
@@ -123,7 +129,7 @@ void userManager(Message *message, Message *response)
 void roomManager(Message *message, Message *response)
 {
 	switch( message->category[Minor] )	{
-		// case Room_Create: 		createRoom(message, response);		break;
+		case Room_Create: 		createRoom(message, response);		break;
 		case Room_List: 		listRoom(message, response);		break;
 		case Room_Enter: 		enterRoom(message, response);		break;
 		case Room_Exit: 		exitRoom(message, response);		break;
@@ -221,60 +227,62 @@ void *communication_thread(void *arg){
 pthread_mutex_t mutex_lock;
 
 void *game_thread(void *arg){
-	game_room game_room_info;
-
-	// ((game_room *)arg)->roomID = pthread_self();
-	((game_room *)arg)->roomID = 0;		// thread 번호 넣어줘야 함
-
-	game_room_info = *(game_room *)arg;
-	sharedMemory.roomList.push_back(game_room_info);
-
 	pthread_mutex_init(&mutex_lock, NULL);
 	while(1) {
 		game_room *current_game;
 		pthread_mutex_lock(&mutex_lock);
 
 		// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
-		for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
-			//미완성
-			// if(roo) {
-			// current_game = &*it;
+		for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
+			if(((game_room *)arg)->roomID == it->roomID) {
+				current_game = &*it;
 				break;
-			//}
-		}
+			}
 
 		//모두 나가면 게임 스레드 종료
 		if(current_game->userCount == 0) {
+			room_number[current_game->roomID] = false;
 			pthread_mutex_unlock(&mutex_lock);
 			pthread_exit((void *)0);
 		}
 
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
+		Message message;
 		if(current_game->messageQueue.size() > 0) {
-			//gameManager(&message);
+			message = current_game->messageQueue.front();
+			current_game->messageQueue.pop();
+			gameManager(&message);
 		}
-		else {
+		else
 			while(current_game->messageQueue.empty()) {
-				//gameManager(&message);
+				message = current_game->messageQueue.front();
+				current_game->messageQueue.pop();
+				gameManager(&message);
 			}
-		}
 
-		// 요청 정보 파싱해서 해당 동작
 		pthread_mutex_unlock(&mutex_lock);
 	}
 }
 
-void createRoom(Message *message) {
+void createRoom(Message *message, Message *response) {
 	pthread_t game_thread_id;
 	game_room game_room_info;
 	userInfo user_info;
 	char *user_idx, *FD, *save_ptr;
+
 
 	user_idx = strtok_r(message->data, DELIM, &save_ptr);
 	FD = strtok_r(NULL, DELIM, &save_ptr);
 
 	user_info.number = atoi(user_idx);
 	user_info.FD = atoi(FD);
+
+	for(int n = 0; n < MAX_ROOM; n++)
+		if(!room_number[n]) {
+				game_room_info.roomID = n;
+				room_number[n] = true;
+				break;
+		}
 
 	game_room_info.status = WAIT;
 	game_room_info.turn = 0;
@@ -291,7 +299,6 @@ void createRoom(Message *message) {
 
   //create game thread
   pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
-	//for =>
 }
 
 #endif
