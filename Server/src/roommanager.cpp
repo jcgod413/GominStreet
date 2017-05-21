@@ -76,13 +76,17 @@ void exitRoom(Message *message, Message *response) {
 			pthread_exit((void *)0);
       return;
 		}
-
+    bool is_roomLeader = false;
+    if(current_game->roomLeader == exit_user)
+      is_roomLeader = true;
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
       if(it2->number == exit_user) {
         current_game->userList.erase(it2);
-        return;
+        break;
       }
 
+    if(is_roomLeader)
+      current_game->roomLeader = current_game->userList.begin()->number;
 }
 
 void enterAlertRoom(Message *message, Message *response) {
@@ -122,6 +126,7 @@ void exitAlertRoom(Message *message, Message *response) {
 
   for(int i = 1; i < 4; i++)
     user[i] = atoi(strtok_r(NULL, DELIM, &save_ptr));
+  char *roomLeader = strtok_r(NULL, DELIM, &save_ptr);
 
   game_room *current_game;
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
@@ -130,6 +135,9 @@ void exitAlertRoom(Message *message, Message *response) {
       break;
     }
   strcpy(response->data, exit_user_str);
+  strcat(response->data, " ");
+  strcat(response->data, roomLeader);
+
   for(int i = 0; i < current_game->userCount; i++) {
     if(user[i] == exit_user)
       continue;
@@ -140,7 +148,36 @@ void exitAlertRoom(Message *message, Message *response) {
 }
 
 void startRoom(Message *message, Message *response) {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  int user[4];
+  user[0] = atoi(strtok_r(NULL, DELIM, &save_ptr));
+  for(int i = 1; i < 4; i++)
+    user[i] = atoi(strtok_r(NULL, DELIM, &save_ptr));
 
+  game_room *current_game;
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
+    if(it->roomID == roomID) {
+      current_game = &*it;
+      break;
+    }
+
+  //인원수 체크
+  if(current_game->userCount < 2) {
+    strcpy(response->data, 0);
+    return;
+  }
+
+  //game_room 상태 변경
+	int status = PLAY;
+	int turn = user[0];
+
+  //모든 유저에게 게임 시작을 알림
+  strcpy(response->data, "1");
+  for(int i = 0; i < current_game->userCount; i++)
+    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
+      if(it2->number == user[i])
+        write(it2->FD, (char *)response, PACKET_SIZE);
 }
 
 #endif

@@ -11,8 +11,8 @@
 - <Room_Enter> : [Room_Number] [User] [FD]
 - <Room_Exit> : [Room_Number] [User]
 - <Room_Alert_Enter> : (C->S) [Room_Number] [User] [User1] [User2] [User3] [User4] / (S->C) [User]
-- <Room_Alert_Exit> : (C->S) [Room_Number] [User] [User1] [User2] [User3] [User4] / (S->C) [User]
-- <Room_Start> : [Room_Number]
+- <Room_Alert_Exit> : (C->S) [Room_Number] [User] [User1] [User2] [User3] [User4] [roomLeader] / (S->C) [User] [roomLeader]
+- <Room_Start> : (C->S) [Room_Number][User1] [User2] [User3] [User4] / (S->C) 1
 
 
 <GameCate> 공통 : [Room_Num] [User1] [User2] [User3] [User4] [turn]
