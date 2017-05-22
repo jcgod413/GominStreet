@@ -156,8 +156,8 @@ void startRoom(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   int user[4];
-  user[0] = atoi(strtok_r(NULL, DELIM, &save_ptr));
-  for(int i = 1; i < 4; i++)
+
+  for(int i = 0; i < 4; i++)
     user[i] = atoi(strtok_r(NULL, DELIM, &save_ptr));
 
   game_room *current_game;
@@ -174,8 +174,8 @@ void startRoom(Message *message, Message *response) {
   }
 
   //game_room 상태 변경
-	int status = PLAY;
-	int turn = user[0];
+	current_game->status = PLAY;
+	current_game->turn = user[0];
 
   //모든 유저에게 게임 시작을 알림
   strcpy(response->data, "1");

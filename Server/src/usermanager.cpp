@@ -153,13 +153,9 @@ void win(Message *message, Message *response)
 
     string sql = "SELECT * FROM USER WHERE num='" + string(num) + "'";
     if( query(sql) )    {
-        sql = "UPDATE USER SET win=" + to_string(userInfo.win+1) + "WHERE num=" + string(num);
-        if( query(sql) ) {
-            strcpy(response->data, "1");
-        }
-        else    {
-            strcpy(response->data, "0");
-        }
+        sql = "UPDATE USER SET win='" + to_string(userInfo.win+1) + "' WHERE num='" + string(num) + "'";
+        query(sql);
+        strcpy(response->data, "1");
     }
     else    {   // Fail
         strcpy(response->data, "0");
@@ -175,13 +171,9 @@ void lose(Message *message, Message *response)
 
     string sql = "SELECT * FROM USER WHERE num='" + string(num) + "'";
     if( query(sql) )    {
-        sql = "UPDATE USER SET lose=" + to_string(userInfo.lose+1) + "WHERE num=" + string(num);
-        if( query(sql) ) {
-            strcpy(response->data, "1");
-        }
-        else    {
-            strcpy(response->data, "0");
-        }
+        sql = "UPDATE USER SET lose='" + to_string(userInfo.lose+1) + "' WHERE num='" + string(num) + "'";
+        query(sql) ;
+        strcpy(response->data, "1");
     }
     else    {   // Fail
         strcpy(response->data, "0");

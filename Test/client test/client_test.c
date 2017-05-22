@@ -67,14 +67,17 @@ int main(int argc, char *argv[]) {
 					break;
 				case 2:
 					strcat(message, "2");
+					strcat(message, " 1");
 					//record(message, response);
 					break;
 				case 3:
 					strcat(message, "3");
+					strcat(message, " 1");
 					//win(message, response);
 					break;
 				case 4:
 					strcat(message, "4");
+					strcat(message, " 1");
 					//lose(message, response);
 			}
 		}
