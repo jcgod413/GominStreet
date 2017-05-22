@@ -89,7 +89,7 @@ bool validityCheck(Message *message)
 {
 	printf("----- Received Message -----\n");
 	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", message->identifier[i]);
-	printf("\nCategory : %d %d \n", message->category[Major], message->category[Minor]);
+	printf("\nCategory : %d %d \n", message->category[Major]-'0', message->category[Minor]-'0');
 	printf("data : %s \n\n", message->data);
 
 	//check whether identifier is GOMIN or not.
@@ -107,7 +107,7 @@ void sendResponse(int clientFD, Message *response)
 	/* test */
 	printf("----- Respond Message  -----\n");
 	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", response->identifier[i]);
-	printf("\nCategory : %d %d \n", response->category[Major], response->category[Minor]);
+	printf("\nCategory : %d %d \n", response->category[Major]-'0', response->category[Minor]-'0');
 	printf("data : %s \n\n", response->data);
 	/* test */
 
@@ -125,16 +125,16 @@ void userManager(Message *message, Message *response)
 	}
 }
 
-void roomManager(Message *message, Message *response)
+void roomManager(Message *message, Message *response, int clientFD)
 {
 	switch( message->category[Minor] )	{
-		case Room_Create: 		createRoom(message, response);		break;
-		case Room_List: 		listRoom(message, response);		break;
-		case Room_Enter: 		enterRoom(message, response);		break;
-		case Room_Exit: 		exitRoom(message, response);		break;
-		case Room_Alert_Enter: 	enterAlertRoom(message, response);	break;
-		case Room_Alert_Exit: 	exitAlertRoom(message, response);	break;
-		case Room_Start: 		startRoom(message, response);		break;
+		case Room_Create: 		createRoom(message, response, clientFD);	break;
+		case Room_List: 		listRoom(message, response);			break;
+		case Room_Enter: 		enterRoom(message, response);			break;
+		case Room_Exit: 		exitRoom(message, response);			break;
+		case Room_Alert_Enter: 	enterAlertRoom(message, response);		break;
+		case Room_Alert_Exit: 	exitAlertRoom(message, response);		break;
+		case Room_Start: 		startRoom(message, response);			break;
 		default: printf("error : room category %d\n", message->category[Minor]);
 	}
 }
@@ -182,8 +182,6 @@ void *communication_thread(void *arg){
 		response.category[Major] = message.category[Major];
 		response.category[Minor] = message.category[Minor];
 
-		printf("enum %d %d\n", Major_User, User_Login);
-
 		//Major_Game에서 필요
 		char *save_ptr = NULL, *roomID_str = NULL;
 		int roomID = 0;
@@ -195,7 +193,7 @@ void *communication_thread(void *arg){
 				break;
 
 			case Major_Room:
-				roomManager(&message, &response);
+				roomManager(&message, &response, clientFD);
 				break;
 
 			case Major_Game:
@@ -223,6 +221,7 @@ void *communication_thread(void *arg){
 }
 
 void *game_thread(void *arg){
+	printf("game thread start\n");
 	pthread_mutex_init(&mutex_lock, NULL);
 	while(1) {
 		game_room *current_game;
@@ -260,41 +259,37 @@ void *game_thread(void *arg){
 	}
 }
 
-void createRoom(Message *message, Message *response) {
+void createRoom(Message *message, Message *response, int clientFD) {
 	pthread_t game_thread_id;
 	game_room game_room_info;
 	userInfo user_info;
-	char *user_idx, *FD, *save_ptr;
+	char *save_ptr;
 
+	user_info.number = atoi(strtok_r(message->data, DELIM, &save_ptr));
+	user_info.FD = clientFD;
 
-	user_idx = strtok_r(message->data, DELIM, &save_ptr);
-	FD = strtok_r(NULL, DELIM, &save_ptr);
-
-	user_info.number = atoi(user_idx);
-	user_info.FD = atoi(FD);
-
-	for(int n = 0; n < MAX_ROOM; n++)
+	for(int n = 0; n < MAX_ROOM; n++)	{
 		if(!room_number[n]) {
 				game_room_info.roomID = n;
 				room_number[n] = true;
 				break;
 		}
+	}
 
+	// initialize game room info
 	game_room_info.status = WAIT;
 	game_room_info.turn = 0;
-
-	if(!game_room_info.userList.empty())
-		game_room_info.userList.clear();
+	game_room_info.userList.clear();
 	game_room_info.userList.push_back(user_info);
-
 	game_room_info.roomLeader = user_info.number;
 	game_room_info.userCount = game_room_info.userList.size();
 
+	// initialize queue
 	while(!game_room_info.messageQueue.empty())
 		game_room_info.messageQueue.pop();
 
-  //create game thread
-  pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
+	// create game thread
+	pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
 }
 
 #endif

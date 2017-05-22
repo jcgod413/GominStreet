@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 			switch(c1)	{
 				case 0:
 					strcat(message, "0");
-					//createRoom(message, response);
+					strcat(message, " 1");	// id
 					break;
 				case 1:
 					strcat(message, "1");

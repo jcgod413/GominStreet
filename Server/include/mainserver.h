@@ -9,14 +9,13 @@ struct thread_param{
 	int client_fd;
 };
 
-void createRoom(Message *, Message *);
 bool validityCheck(Message *);
 void sendResponse(int, Message *);
 void userManager(Message *, Message *);
-void roomManager(Message *);
+void roomManager(Message *, Message *, int);
 void gameManager(Message *);
 void *communication_thread(void *);
 void *game_thread(void *);
-void createRoom(Message *);
+void createRoom(Message *, Message *, int);
 
 #endif
