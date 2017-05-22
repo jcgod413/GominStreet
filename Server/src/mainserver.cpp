@@ -105,10 +105,10 @@ void sendResponse(int clientFD, Message *response)
 	write(clientFD, (char*)response, PACKET_SIZE);
 
 	/* test */
-	printf("----- Respond Message  -----\n");
-	printf("Identifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", response->identifier[i]);
-	printf("\nCategory : %d %d \n", response->category[Major]-'0', response->category[Minor]-'0');
-	printf("data : %s \n\n", response->data);
+	printf("\t\t\t----- Respond Message  -----\n");
+	printf("\t\t\tIdentifer : ");	for(int i=0; i<IDENTIFIER_SIZE; i++)	printf("%c", response->identifier[i]);
+	printf("\n\t\t\tCategory : %d %d \n", response->category[Major]-'0', response->category[Minor]-'0');
+	printf("\t\t\tdata : %s \n\n", response->data);
 	/* test */
 }
 
@@ -129,7 +129,7 @@ void roomManager(Message *message, Message *response, int clientFD)
 	switch( message->category[Minor] )	{
 		case Room_Create: 		createRoom(message, response, clientFD);	break;
 		case Room_List: 		listRoom(message, response);			break;
-		case Room_Enter: 		enterRoom(message, response);			break;
+		case Room_Enter: 		enterRoom(message, response, clientFD);	break;
 		case Room_Exit: 		exitRoom(message, response);			break;
 		case Room_Alert_Enter: 	enterAlertRoom(message, response);		break;
 		case Room_Alert_Exit: 	exitAlertRoom(message, response);		break;
@@ -223,19 +223,9 @@ void *game_thread(void *arg){
 	printf("game thread start\n");
 	pthread_mutex_init(&mutex_lock, NULL);
 	
-	game_room *current_game;
-	// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
-	// for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)	{
-	// 	printf("%s ?= %s\n", (game_room *)arg)->roomID , it->roomID);
-	// 	if(((game_room *)arg)->roomID == it->roomID) {
-	// 		current_game = &*it;
-	// 		break;
-	// 	}
-	// }
-	current_game = &sharedMemory.roomList.back();
+	game_room *current_game = &sharedMemory.roomList.back();
 	
-	while(1) {
-		
+	while(1) {	
 		// pthread_mutex_lock(&mutex_lock);
 
 		//모두 나가면 게임 스레드 종료

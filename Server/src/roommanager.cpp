@@ -28,31 +28,36 @@ void listRoom(Message *message, Message *response) {
     strcpy(response->data, room.c_str());
 }
 
-void enterRoom(Message *message, Message *response) {
+void enterRoom(Message *message, Message *response, int clientFD) {
   char *save_ptr;
   char *roomID_str = strtok_r(message->data, DELIM, &save_ptr);
   char *user_idx = strtok_r(NULL, DELIM, &save_ptr);
-	char *FD = strtok_r(NULL, DELIM, &save_ptr);
   int roomID = atoi(roomID_str);
+  game_room *current_game;
   userInfo user_info;
 
   user_info.number = atoi(user_idx);
-  user_info.FD = atoi(FD);
+  user_info.FD = clientFD;
 
-  game_room *current_game;
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
+  // find game room in shared memory
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
       current_game = &*it;
       break;
     }
+  }
 
-    if(current_game->userCount >= 4) {
-      strcpy(response->data, "0");
-      return;
-    }
+  // if the room is full, send response 0
+  if(current_game->userCount >= 4) {
+    strcpy(response->data, "0");
+    return;
+  }
 
-    current_game->userCount++;
-  	current_game->userList.push_back(user_info);
+  current_game->userCount++;
+  current_game->userList.push_back(user_info);
+  
+  // success response
+  strcpy(response->data, "1");
 }
 
 void exitRoom(Message *message, Message *response) {

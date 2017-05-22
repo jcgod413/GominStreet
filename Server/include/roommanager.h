@@ -6,7 +6,7 @@
 #include "gamedata.h"
 
 void listRoom(Message *, Message *);
-void enterRoom(Message *, Message *);
+void enterRoom(Message *, Message *, int);
 void exitRoom(Message *, Message *);
 void enterAlertRoom(Message *, Message *);
 void exitAlertRoom(Message *, Message *);

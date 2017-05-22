@@ -2,7 +2,7 @@
 #define __MAINSERVER_H__
 
 #include "protocol.h"
-#define PORT 20001
+#define PORT 20000
 #define MAX_ROOM 80
 
 struct thread_param{

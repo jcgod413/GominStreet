@@ -28,10 +28,12 @@ int main(int argc, char *argv[]) {
 	serv_adr.sin_addr.s_addr=inet_addr(argv[1]);
 	serv_adr.sin_port=htons(atoi(argv[2]));
 
-	if(connect(sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr))==-1)
-		printf("connect() error!");
+	if(connect(sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr))==-1)	{
+		printf("connect() error!\n");
+		return -1;
+	}
 	else
-		puts("Connected...........");
+		puts("Connected...........\n");
 
 	while(1) {
 		memset(message, 0, sizeof(message));
@@ -99,6 +101,8 @@ int main(int argc, char *argv[]) {
 					break;
 				case 2:
 					strcat(message, "2");
+					strcat(message, " 1");	// room id
+					strcat(message, " 2");	// id
 					//enterRoom(message, response);
 					break;
 				case 3:
