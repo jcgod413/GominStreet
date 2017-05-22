@@ -18,7 +18,7 @@ extern bool room_number[MAX_ROOM];
 extern pthread_mutex_t mutex_lock;
 
 void listRoom(Message *message, Message *response) {
-    string room = to_string(sharedMemory.roomList.size()) + " ";
+    string room = to_string(sharedMemory.roomList.size());
 
     list<game_room>::iterator it;
     for (it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it){

@@ -3,7 +3,7 @@
 
 #include "protocol.h"
 #define PORT 20001
-#define MAX_ROOM 1024
+#define MAX_ROOM 80
 
 struct thread_param{
 	int client_fd;
