@@ -3,6 +3,7 @@
 
 #include "protocol.h"
 
+void common_message(Message *, char *[], char *, char *);
 void diceRoll(Message *);
 void turn(Message *);
 void move(Message *);
