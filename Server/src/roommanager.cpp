@@ -167,17 +167,17 @@ void startRoom(Message *message, Message *response) {
       break;
     }
 
-  //인원수 체크
+  // 인원수 체크, 2인 미만시 플레이 불가
   if(current_game->userCount < 2) {
     strcpy(response->data, 0);
     return;
   }
 
-  //game_room 상태 변경
+  // game_room 상태 변경
 	current_game->status = PLAY;
 	current_game->turn = user[0];
 
-  //모든 유저에게 게임 시작을 알림
+  // 모든 유저에게 게임 시작을 알림
   strcpy(response->data, "1");
   for(int i = 0; i < current_game->userCount; i++)
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
