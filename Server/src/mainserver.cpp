@@ -110,7 +110,6 @@ void sendResponse(int clientFD, Message *response)
 	printf("\nCategory : %d %d \n", response->category[Major]-'0', response->category[Minor]-'0');
 	printf("data : %s \n\n", response->data);
 	/* test */
-
 }
 
 void userManager(Message *message, Message *response)
@@ -223,16 +222,21 @@ void *communication_thread(void *arg){
 void *game_thread(void *arg){
 	printf("game thread start\n");
 	pthread_mutex_init(&mutex_lock, NULL);
+	
+	game_room *current_game;
+	// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
+	// for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)	{
+	// 	printf("%s ?= %s\n", (game_room *)arg)->roomID , it->roomID);
+	// 	if(((game_room *)arg)->roomID == it->roomID) {
+	// 		current_game = &*it;
+	// 		break;
+	// 	}
+	// }
+	current_game = &sharedMemory.roomList.back();
+	
 	while(1) {
-		game_room *current_game;
-		pthread_mutex_lock(&mutex_lock);
-
-		// 반복문을 돌아서 리스트에 들어있는 방 정보를 가져오기
-		for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
-			if(((game_room *)arg)->roomID == it->roomID) {
-				current_game = &*it;
-				break;
-			}
+		
+		// pthread_mutex_lock(&mutex_lock);
 
 		//모두 나가면 게임 스레드 종료
 		if(current_game->userCount == 0) {
@@ -242,20 +246,15 @@ void *game_thread(void *arg){
 		}
 
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
-		Message message;
-		if(current_game->messageQueue.size() > 0) {
-			message = current_game->messageQueue.front();
-			current_game->messageQueue.pop();
-			gameManager(&message);
-		}
-		else
-			while(current_game->messageQueue.empty()) {
-				message = current_game->messageQueue.front();
-				current_game->messageQueue.pop();
-				gameManager(&message);
-			}
+		while( current_game->messageQueue.empty() ) { }
 
-		pthread_mutex_unlock(&mutex_lock);
+		Message message = current_game->messageQueue.front();
+		current_game->messageQueue.pop();
+		gameManager(&message);	// 게임 메시지 처리해줘야함 !!!!!!!!!!!!!!! (지금 segment fault 뜸뜸
+		
+
+		// pthread_mutex_unlock(&mutex_lock);
+		// mutex가 무한히 걸릴 수 있을듯? 
 	}
 }
 
@@ -268,7 +267,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	user_info.number = atoi(strtok_r(message->data, DELIM, &save_ptr));
 	user_info.FD = clientFD;
 
-	for(int n = 0; n < MAX_ROOM; n++)	{
+	for(int n = 1; n < MAX_ROOM; n++)	{
 		if(!room_number[n]) {
 				game_room_info.roomID = n;
 				room_number[n] = true;
@@ -288,8 +287,14 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	while(!game_room_info.messageQueue.empty())
 		game_room_info.messageQueue.pop();
 
+	// make room in shared memory
+	sharedMemory.roomList.push_back(game_room_info);
+
 	// create game thread
 	pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
+
+	// make response contains room id 
+	strcpy(response->data, to_string(game_room_info.roomID).c_str());
 }
 
 #endif

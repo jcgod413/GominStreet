@@ -29,6 +29,11 @@
         "ios": "cpp",
         "list": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "iterator": "cpp",
+        "bitset": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "ratio": "cpp"
     }
 }
