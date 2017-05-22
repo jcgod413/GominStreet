@@ -74,7 +74,7 @@ void exitRoom(Message *message, Message *response) {
 
     current_game->userCount--;
 
-    //모두 나가면 게임 스레드 종료
+    // 모두 나가면 게임 스레드 종료
 		if(current_game->userCount == 0) {
 			room_number[current_game->roomID] = false;
 			pthread_mutex_unlock(&mutex_lock);
