@@ -7,12 +7,9 @@
 #include <queue>
 #include <pthread.h>
 #include "gamemanager.h"
-<<<<<<< HEAD
 #include "gamedata.h"
-=======
-#include "game_data.h"
 #include "protocol.h"
->>>>>>> origin/master
+
 using namespace std;
 
 extern shared_memory sharedMemory;
@@ -24,19 +21,13 @@ void common_message(Message *message, char *roomID_str, char *user[], char *turn
   turn = strtok_r(NULL, DELIM, &save_ptr);
 }
 
-<<<<<<< HEAD
-void diceRoll(Message *message)
-{
-  char *user[MAX_USER], *player;
-=======
 void diceRoll(Message *message) {
   //주사위 던진다
   char *roomID_str, user[4], *turn;
->>>>>>> origin/master
   char *save_ptr;
   char *diceNum_str;
   int dicNum;
-  common_message(message, roomID_str, user, turn, save_ptr);
+  // common_message(message, roomID_str, user, turn, save_ptr);
   diceNum_str = strtok_r(NULL, DELIM, &save_ptr);
   dicNum = atoi(diceNum_str);
 }
@@ -45,7 +36,7 @@ void turn(Message *message) {
   char *roomID_str, user[4], *turn;
   char *save_ptr;
   int roomID;
-  common_message(roomID_str, message, user, turn, save_ptr);
+  // common_message(roomID_str, message, user, turn, save_ptr);
   roomID = atoi(roomID_str);
   game_room *current_game;
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
