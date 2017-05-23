@@ -117,34 +117,18 @@ void enterAlertRoom(game_room *current_game, int userID) {
 }
 
 void exitAlertRoom(game_room *current_game, int userID) {  
-  // char *save_ptr;
-  // int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  // char *exit_user_str = strtok_r(NULL, DELIM, &save_ptr);
-  // int exit_user = atoi(exit_user_str);
-  // int user[4];
-  // user[0] = atoi(strtok_r(NULL, DELIM, &save_ptr));
-
-  // for(int i = 1; i < 4; i++)
-  //   user[i] = atoi(strtok_r(NULL, DELIM, &save_ptr));
-  // char *roomLeader = strtok_r(NULL, DELIM, &save_ptr);
-
-  // game_room *current_game;
-  // for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
-  //   if(it->roomID == roomID) {
-  //     current_game = &*it;
-  //     break;
-  //   }
-  // strcpy(response->data, exit_user_str);
-  // strcat(response->data, " ");
-  // strcat(response->data, roomLeader);
-
-  // for(int i = 0; i < current_game->userCount; i++) {
-  //   if(user[i] == exit_user)
-  //     continue;
-  //   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-  //     if(it2->number == user[i])
-  //       write(it2->FD, (char *)response, PACKET_SIZE);
-  // }
+  Message response;
+  strcpy(response.identifier, "GOMIN");
+  response.category[Major] = Major_Room;
+  response.category[Minor] = Room_Alert_Exit;
+  
+  strcpy(response.data, to_string(userID).c_str());
+  printf("<%d번 방에 user%d이 퇴장>\n", current_game->roomID, userID);
+  for(int i = 0; i < current_game->userCount; i++) {
+    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
+      write(it2->FD, (char *)&response, PACKET_SIZE);
+    }
+  }
 }
 
 void startRoom(Message *message, Message *response) {
