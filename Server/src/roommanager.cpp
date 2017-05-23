@@ -56,7 +56,7 @@ void enterRoom(Message *message, Message *response, int clientFD) {
   }
 
   // if the room is full, send response 0
-  if(current_game->userCount >= 4) {
+  if( current_game->userCount >= MAX_USER ) {
     strcpy(response->data, "0");
     return;
   }
@@ -67,7 +67,7 @@ void enterRoom(Message *message, Message *response, int clientFD) {
   // success response
   strcpy(response->data, "1");
 
-  enterAlertRoom(current_game, user_info.number);
+  // enterAlertRoom(current_game, user_info.number);
 }
 
 void exitRoom(Message *message, Message *response) {
@@ -98,7 +98,7 @@ void exitRoom(Message *message, Message *response) {
     if(is_roomLeader)
       current_game->roomLeader = current_game->userList.begin()->number;
 
-    exitAlertRoom(current_game, exit_user);
+    // exitAlertRoom(current_game, exit_user);
 }
 
 void enterAlertRoom(game_room *current_game, int userID) {  
@@ -134,9 +134,9 @@ void exitAlertRoom(game_room *current_game, int userID) {
 void startRoom(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  int user[4];
+  int user[MAX_USER];
 
-  for(int i = 0; i < 4; i++)
+  for(int i = 0; i < MAX_USER; i++)
     user[i] = atoi(strtok_r(NULL, DELIM, &save_ptr));
 
   game_room *current_game;

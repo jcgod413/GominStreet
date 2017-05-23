@@ -7,6 +7,7 @@
 #include <queue>
 #include <pthread.h>
 #include "gamemanager.h"
+#include "gamedata.h"
 using namespace std;
 
 void common_message(Message *message, char *user[], char *player, char *save_ptr) {
@@ -18,7 +19,7 @@ void common_message(Message *message, char *user[], char *player, char *save_ptr
 
 void diceRoll(Message *message)
 {
-  char *user[4], *player;
+  char *user[MAX_USER], *player;
   char *save_ptr;
   char *diceNum_str;
   int dicNum;

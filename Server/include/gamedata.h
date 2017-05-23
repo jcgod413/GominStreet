@@ -9,6 +9,8 @@
 #include "protocol.h"
 using namespace std;
 
+#define MAX_USER 4
+
 enum game_status {WAIT, PLAY};
 
 struct userInfo	{
