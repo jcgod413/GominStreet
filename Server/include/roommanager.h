@@ -8,8 +8,8 @@
 void listRoom(Message *, Message *, int);
 void enterRoom(Message *, Message *, int);
 void exitRoom(Message *, Message *);
-void enterAlertRoom(Message *, Message *);
-void exitAlertRoom(Message *, Message *);
+void enterAlertRoom(game_room *, int);
+void exitAlertRoom(game_room *, int);
 void startRoom(Message *, Message *);
 
 #endif
