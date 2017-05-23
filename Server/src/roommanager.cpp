@@ -27,7 +27,7 @@ void listRoom(Message *message, Message *response, int clientFD) {
     for (it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it){
         memset(response->data, 0, sizeof(response->data));
         room.clear();
-        room = to_string(it->roomID) + " " + to_string(it->status) + " " + to_string(it->userCount);
+        room = to_string(it->roomID) + " " + to_string(it->status) + " " + to_string(it->userCount) + " " + it->title;
         strcpy(response->data, room.c_str());
         write(clientFD, response, PACKET_SIZE);
         printf("room info : %s\n", response->data);

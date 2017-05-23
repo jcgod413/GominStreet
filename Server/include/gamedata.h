@@ -19,6 +19,7 @@ struct userInfo	{
 struct game_room {
 	int roomID;	// room id(thread num)
 	int status;			// game status (wait, play)
+	char title[40];		// room title
 	int turn;			// current turn user index
 	int userCount; //Number of users
 	int roomLeader; //방장

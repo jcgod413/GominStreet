@@ -236,8 +236,6 @@ void *game_thread(void *arg){
 	game_room *current_game = &sharedMemory.roomList.back();
 	
 	while(1) {	
-		// pthread_mutex_lock(&mutex_lock);
-
 		//모두 나가면 게임 스레드 종료
 		if( current_game->userCount == 0 )	{
 			deleteRoom(current_game->roomID);
@@ -255,13 +253,12 @@ void *game_thread(void *arg){
 			}
 		}
 
+		pthread_mutex_lock(&mutex_lock);
 		Message message = current_game->messageQueue.front();
 		current_game->messageQueue.pop();
-		gameManager(&message);	// 게임 메시지 처리해줘야함 !!!!!!!!!!!!!!! (지금 segment fault 뜸뜸
-		
+		pthread_mutex_unlock(&mutex_lock);
 
-		// pthread_mutex_unlock(&mutex_lock);
-		// mutex가 무한히 걸릴 수 있을듯? 
+		gameManager(&message);	// 게임 메시지 처리해줘야함 !!!!!!!!!!!!!!! (지금 segment fault 뜸뜸
 	}
 }
 
@@ -273,6 +270,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	
 	user_info.number = atoi(strtok_r(message->data, DELIM, &save_ptr));
 	user_info.FD = clientFD;
+	string title = strtok_r(NULL, DELIM, &save_ptr);
 
 	for(int n = 1; n < MAX_ROOM; n++)	{
 		if(!room_number[n]) {
@@ -289,13 +287,18 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	game_room_info.userList.push_back(user_info);
 	game_room_info.roomLeader = user_info.number;
 	game_room_info.userCount = game_room_info.userList.size();
+	strcpy(game_room_info.title, title.c_str());
 
 	// initialize queue
 	while(!game_room_info.messageQueue.empty())
 		game_room_info.messageQueue.pop();
 
+	pthread_mutex_init(&mutex_lock, NULL);
+	pthread_mutex_lock(&mutex_lock);
 	// make room in shared memory
 	sharedMemory.roomList.push_back(game_room_info);
+	pthread_mutex_unlock(&mutex_lock);
+	
 	printf("room created. room size : %d\n", sharedMemory.roomList.size());
 
 	// create game thread
