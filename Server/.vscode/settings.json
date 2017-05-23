@@ -35,6 +35,8 @@
         "initializer_list": "cpp",
         "utility": "cpp",
         "ratio": "cpp",
-        "__locale": "cpp"
+        "__locale": "cpp",
+        "__bit_reference": "cpp",
+        "locale": "cpp"
     }
 }

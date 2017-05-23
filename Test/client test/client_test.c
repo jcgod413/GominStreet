@@ -67,17 +67,17 @@ int main(int argc, char *argv[]) {
 					break;
 				case 2:
 					strcat(message, "2");
-					strcat(message, " 1");
+					strcat(message, " 1");	// id
 					//record(message, response);
 					break;
 				case 3:
 					strcat(message, "3");
-					strcat(message, " 1");
+					strcat(message, " 2");	// id
 					//win(message, response);
 					break;
 				case 4:
 					strcat(message, "4");
-					strcat(message, " 1");
+					strcat(message, " 2");	// id
 					//lose(message, response);
 			}
 		}
@@ -105,11 +105,14 @@ int main(int argc, char *argv[]) {
 				case 2:
 					strcat(message, "2");
 					strcat(message, " 1");	// room id
-					strcat(message, " 2");	// id
+					strcat(message, " 1");	// id
 					//enterRoom(message, response);
 					break;
 				case 3:
 					strcat(message, "3");
+					strcat(message, " 1");	// room id
+					strcat(message, " 1");	// id
+					printf("message !!!! : %s", message);
 					//exitRoom(message, response);
 					break;
 				case 4:

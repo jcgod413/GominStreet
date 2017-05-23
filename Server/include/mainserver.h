@@ -17,5 +17,6 @@ void gameManager(Message *);
 void *communication_thread(void *);
 void *game_thread(void *);
 void createRoom(Message *, Message *, int);
+void deleteRoom(int);
 
 #endif

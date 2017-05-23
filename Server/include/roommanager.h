@@ -5,7 +5,7 @@
 #include "protocol.h"
 #include "gamedata.h"
 
-void listRoom(Message *, Message *);
+void listRoom(Message *, Message *, int);
 void enterRoom(Message *, Message *, int);
 void exitRoom(Message *, Message *);
 void enterAlertRoom(Message *, Message *);

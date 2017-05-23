@@ -17,15 +17,23 @@ extern shared_memory sharedMemory;
 extern bool room_number[MAX_ROOM];
 extern pthread_mutex_t mutex_lock;
 
-void listRoom(Message *message, Message *response) {
+void listRoom(Message *message, Message *response, int clientFD) {
     string room = to_string(sharedMemory.roomList.size());
+    strcpy(response->data, room.c_str());
+    write(clientFD, response, PACKET_SIZE);
+    printf("room size : %s\n", response->data);
 
     list<game_room>::iterator it;
     for (it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it){
-         room += (" " + to_string(it->roomID) + " " + to_string(it->status) + " " + to_string(it->userCount));
+        memset(response->data, 0, sizeof(response->data));
+        room.clear();
+        room = to_string(it->roomID) + " " + to_string(it->status) + " " + to_string(it->userCount);
+        strcpy(response->data, room.c_str());
+        write(clientFD, response, PACKET_SIZE);
+        printf("room info : %s\n", response->data);
     }
-
-    strcpy(response->data, room.c_str());
+    
+    memset(response->data, 0, sizeof(response->data));
 }
 
 void enterRoom(Message *message, Message *response, int clientFD) {
@@ -62,7 +70,9 @@ void enterRoom(Message *message, Message *response, int clientFD) {
 
 void exitRoom(Message *message, Message *response) {
   char *save_ptr;
+
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+
   int exit_user = atoi(strtok_r(NULL, DELIM, &save_ptr));
 
   game_room *current_game;
@@ -75,12 +85,13 @@ void exitRoom(Message *message, Message *response) {
     current_game->userCount--;
 
     // 모두 나가면 게임 스레드 종료
-		if(current_game->userCount == 0) {
-			room_number[current_game->roomID] = false;
-			pthread_mutex_unlock(&mutex_lock);
-			pthread_exit((void *)0);
-      return;
-		}
+		// if(current_game->userCount == 0) {
+			// room_number[current_game->roomID] = false;
+			// pthread_mutex_unlock(&mutex_lock);
+			// pthread_exit((void *)0);
+      // return;
+		// }
+
     bool is_roomLeader = false;
     if(current_game->roomLeader == exit_user)
       is_roomLeader = true;
@@ -111,6 +122,7 @@ void enterAlertRoom(Message *message, Message *response) {
       current_game = &*it;
       break;
     }
+
   strcpy(response->data, enter_user_str);
   for(int i = 0; i < current_game->userCount; i++) {
     if(user[i] == enter_user)

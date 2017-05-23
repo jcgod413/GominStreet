@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <list>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -128,7 +129,7 @@ void roomManager(Message *message, Message *response, int clientFD)
 {
 	switch( message->category[Minor] )	{
 		case Room_Create: 		createRoom(message, response, clientFD);	break;
-		case Room_List: 		listRoom(message, response);			break;
+		case Room_List: 		listRoom(message, response, clientFD);		break;
 		case Room_Enter: 		enterRoom(message, response, clientFD);	break;
 		case Room_Exit: 		exitRoom(message, response);			break;
 		case Room_Alert_Enter: 	enterAlertRoom(message, response);		break;
@@ -174,14 +175,14 @@ void *communication_thread(void *arg){
 			continue;
 		}
 
-		//내가 받을땐 숫자로 받고, 보낼땐 문자로 보내기.
+		// 내가 받을땐 숫자로 받고, 보낼땐 문자로 보내기.
 
 		Message response;
 		strcpy(response.identifier, "GOMIN");
 		response.category[Major] = message.category[Major];
 		response.category[Minor] = message.category[Minor];
 
-		//Major_Game에서 필요
+		// Major_Game에서 필요
 		char *save_ptr = NULL, *roomID_str = NULL;
 		int roomID = 0;
 		bool isFound = false;
@@ -196,12 +197,12 @@ void *communication_thread(void *arg){
 				break;
 
 			case Major_Game:
-				//방번호를 추출함
+				// 방번호를 추출함
 			 	roomID_str = strtok_r(message.data, DELIM, &save_ptr);
 				roomID = atoi(roomID_str);
 				isFound = false;
 
-				//방번호를 찾을 때까지 무한반복
+				// 방번호를 찾을 때까지 무한반복
 				while(!isFound)
 					for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
 						if(it->roomID == roomID) {//방번호를 찾았을 때
@@ -219,6 +220,17 @@ void *communication_thread(void *arg){
 	}
 }
 
+void deleteRoom(int roomID)
+{
+	printf("room size : %d\n", sharedMemory.roomList.size());
+	for (list<game_room>::iterator itri = sharedMemory.roomList.begin(); itri != sharedMemory.roomList.end(); )	{
+		if( itri->roomID == roomID )	
+			itri = sharedMemory.roomList.erase(itri);
+		else
+			itri++;
+	}
+}
+
 void *game_thread(void *arg){
 	printf("game thread start\n");
 	pthread_mutex_init(&mutex_lock, NULL);
@@ -229,14 +241,21 @@ void *game_thread(void *arg){
 		// pthread_mutex_lock(&mutex_lock);
 
 		//모두 나가면 게임 스레드 종료
-		if(current_game->userCount == 0) {
-			room_number[current_game->roomID] = false;
-			pthread_mutex_unlock(&mutex_lock);
+		if( current_game->userCount == 0 )	{
+			deleteRoom(current_game->roomID);
+			// pthread_mutex_unlock(&mutex_lock);
 			pthread_exit((void *)0);
 		}
 
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
-		while( current_game->messageQueue.empty() ) { }
+		while( current_game->messageQueue.empty() ) { 
+			//모두 나가면 게임 스레드 종료
+			if( current_game->userCount == 0 )	{
+				deleteRoom(current_game->roomID);
+				// pthread_mutex_unlock(&mutex_lock);
+				pthread_exit((void *)0);
+			}
+		}
 
 		Message message = current_game->messageQueue.front();
 		current_game->messageQueue.pop();
@@ -253,7 +272,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	game_room game_room_info;
 	userInfo user_info;
 	char *save_ptr;
-
+	
 	user_info.number = atoi(strtok_r(message->data, DELIM, &save_ptr));
 	user_info.FD = clientFD;
 
@@ -279,6 +298,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 
 	// make room in shared memory
 	sharedMemory.roomList.push_back(game_room_info);
+	printf("room created. room size : %d\n", sharedMemory.roomList.size());
 
 	// create game thread
 	pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
