@@ -1,6 +1,6 @@
 <UserCate>
 - <User_Login> : [User_ID] [Passward]
-- <User_Signup> : [User_ID] [Passward] [Nickname]
+- <User_Signup> : [User_ID] [Passward]
 - <User_Record> : [Result]
 - <User_Win> : [User]
 - <User_Loss> : [User]
