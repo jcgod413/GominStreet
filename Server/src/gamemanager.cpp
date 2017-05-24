@@ -3,9 +3,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <list>
 #include <queue>
 #include <pthread.h>
+#include <time.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "gamemanager.h"
 #include "gamedata.h"
 #include "protocol.h"
@@ -13,44 +17,73 @@
 using namespace std;
 
 extern shared_memory sharedMemory;
+extern pthread_mutex_t mutex_lock;
 
+/*
 void common_message(Message *message, char *roomID_str, char *user[], char *turn, char *save_ptr) {
   roomID_str = strtok_r(message->data, DELIM, &save_ptr);
   for(int i = 0; i < 4; i++)
     user[i] = strtok_r(NULL, DELIM, &save_ptr);
   turn = strtok_r(NULL, DELIM, &save_ptr);
 }
+*/
 
-void diceRoll(Message *message) {
-  //주사위 던진다
-  char *roomID_str, user[4], *turn;
+void diceRoll(Message *message, Message *response) {
+  srand(time(NULL));
+  int dice_number = rand() % 6 + 1;
   char *save_ptr;
-  char *diceNum_str;
-  int dicNum;
-  // common_message(message, roomID_str, user, turn, save_ptr);
-  diceNum_str = strtok_r(NULL, DELIM, &save_ptr);
-  dicNum = atoi(diceNum_str);
-}
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
 
-void turn(Message *message) {
-  char *roomID_str, user[4], *turn;
-  char *save_ptr;
-  int roomID;
-  // common_message(roomID_str, message, user, turn, save_ptr);
-  roomID = atoi(roomID_str);
   game_room *current_game;
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
+  pthread_mutex_lock(&mutex_lock);
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
       current_game = &*it;
       break;
     }
+  }
+  pthread_mutex_unlock(&mutex_lock);
 
-  	//current->turn =
-  	int userCount; //Number of users
-  	int roomLeader; //방장
-  	list<userInfo> userList;		// user list
-  	queue<Message> messageQueue;
+  string room = to_string(current_game->turn);
+  room = room + " " + to_string(dice_number);
 
+  strcpy(response->data, room.c_str());
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
+    write(it2->FD, response, PACKET_SIZE);
+  //식중독 고려
+}
+
+void turn(Message *message) {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  game_room *current_game;
+  pthread_mutex_lock(&mutex_lock);
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
+    if(it->roomID == roomID) {
+      current_game = &*it;
+      break;
+    }
+  }
+  pthread_mutex_unlock(&mutex_lock);
+
+  int nth = 0;
+  bool current_turn = false;
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
+    if(!current_turn)
+      nth++;
+    else {
+      current_game->turn = it2->number;
+      break;
+    }
+
+    if(current_game->turn == it2->number)
+      current_turn = true;
+  }
+
+  if(nth == current_game->userCount)
+    current_game->turn = current_game->userList.begin()->number;
+
+    //식중독 고려
 }
 
 void move(Message *message) {

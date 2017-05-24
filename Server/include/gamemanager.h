@@ -3,8 +3,8 @@
 
 #include "protocol.h"
 
-void common_message(Message *, char *[], char *, char *);
-void diceRoll(Message *);
+//void common_message(Message *, char *[], char *, char *);
+void diceRoll(Message *, Message *response);
 void turn(Message *);
 void move(Message *);
 void buy(Message *);

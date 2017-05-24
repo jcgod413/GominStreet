@@ -1,42 +1,43 @@
 <UserCate>
-- <User_Login> : [User_ID] [Passward]
-- <User_Signup> : [User_ID] [Passward]
-- <User_Record> : [Result]
-- <User_Win> : [User]
-- <User_Loss> : [User]
+•	User_Login
+: (C->S) [User_ID] [Passward], (S->C) 성공시 [User_ID] / 실패 시 0
+•	User_Signup
+: (C->S) [User_ID] [Passward], (S->C) 성공시 [User_ID] / 실패 시 0
+•	User_Record
+: (C->S) [User_ID], (S->C) 성공 시 [Win_Lose_Result] / 실패 시 0
+•	User_Win
+: (C->S) [User_ID], (S->C) 성공 시 1 / 실패 시 0
+•	User_Lose
+: (C->S) [User_ID], (S->C) 성공 시 1 / 실패 시 0
 
 <RoomCate>
-- <Room_Create> : [User] [FD]
-- <Room_List> : 미정
-- <Room_Enter> : [Room_Number] [User] [FD]
-- <Room_Exit> : [Room_Number] [User]
-- <Room_Alert_Enter> : (C->S) [Room_Number] [User] [User1] [User2] [User3] [User4] / (S->C) [User]
-- <Room_Alert_Exit> : (C->S) [Room_Number] [User] [User1] [User2] [User3] [User4] [roomLeader] / (S->C) [User] [roomLeader]
-- <Room_Start> : (C->S) [Room_Number][User1] [User2] [User3] [User4] / (S->C) 1
+•	Room_Create
+: (C->S) [Room_ID] [Title], (S->C) [Room_ID]
+•	Room_List
+: (S->C) (i) [Room_Size], (ii) [Room_ID] [User_Count] [Title]
+•	Room_Enter
+: (C->S) [Room_ID] [User_ID], (S->C) 성공 시 1 / 실패 시 0
+•	Room_Exit
+: (C->S) [Room_ID] [User_ID]
+•	Room_Alert_Enter
+: (S->C) [User_ID]
+•	Room_Alert_Exit
+: (S->C) [User_ID]
+•	Room_Start
+: (C->S) [Room_ID] [UserN_ID] / (S->C) 성공 시 1, 오류 시 0
 
-
-<GameCate> 공통 : [Room_Num] [User1] [User2] [User3] [User4] [turn]
-	//[Room_Num]에 게임이 진행되는 방번호 저장
-	//[User1] ~ [User4]에 사용자의 DB 인덱스를 저장
-	//N(2 <= N < 4)명이 게임에 참여할 경우 [User(N+1)] ~ [User4]에 -1을 저장
-	//[Player]에 현재 게임을 진행 중인 사용자의 인덱스를 저장
-- <Game_DiceRoll> : [Dice_Num]
-	//[Dice_Num]에 주사위 번호 결과 저장
-- <Game_Turn> : X
-	//공통 부분으로 해결
-- <Game_Move> : [Plate_Loc]
-	//[Plate_Loc]에 플레이어의 이동 후의 판 위치번호 저장
-	//황금열쇠 등으로 후진을 할 수 있기 때문에 판의 위치번호 저장
-- <Game_Buy> : [Plate_Loc] [Nth] [Money]
-	//[Plate_Loc]에 음식점 위치번호 저장
-	//[Nth]에 호점수 저장 (1, 2, 3)
-	//[Money]에 음식점 개업비용 저장
-- <Game_Pay> : [Plate_Loc] [Nth] [Money] [Owner]
-	//[Plate_Loc]에 음식점 위치번호 저장
-	//[Nth]에 호점수 저장 (1, 2, 3)
-	//[Money]에 음식 지불비용 저장
-	//[Owner]에 음식점 주인 사용자의 DB 인덱스 저장
-- <Game_GoldKey> : [Key_Num]
-	//[Key_Num]에 당첨된 황금열쇠 번호 저장
-- <Game_Isolation> : [Turn]
-	//[Turn]에 쉬는 턴의 수 저장
+<GameCate>
+•	Game_DiceRoll
+: (C->S)[Room_ID], (S->C)[Turn] [Dice_Number]
+•	Game_Turn
+: [Room_ID] [User_ID] [UserN_ID] [Turn]
+•	Game_Move
+: [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc]
+•	Game_Buy
+: [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc] [Nth] [Money]
+•	Game_Pay
+: [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc] [Nth] [Money] [Owner]
+•	Game_GoldKey
+: [Room_ID] [User_ID] [UserN_ID] [Turn] [Key_Num]
+•	Game_Isolation
+: [Room_ID] [User_ID] [UserN_ID] [Turn] [Left_Turn]

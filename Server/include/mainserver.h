@@ -13,7 +13,7 @@ bool validityCheck(Message *);
 void sendResponse(int, Message *);
 void userManager(Message *, Message *);
 void roomManager(Message *, Message *, int);
-void gameManager(Message *);
+void gameManager(Message *, Message *);
 void *communication_thread(void *);
 void *game_thread(void *);
 void createRoom(Message *, Message *, int);

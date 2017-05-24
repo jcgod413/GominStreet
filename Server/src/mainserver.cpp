@@ -137,10 +137,10 @@ void roomManager(Message *message, Message *response, int clientFD)
 	}
 }
 
-void gameManager(Message *message)
+void gameManager(Message *message, Message *response)
 {
 	switch( message->category[Minor] )	{
-		case Game_DiceRoll:		diceRoll(message); 	break;
+		case Game_DiceRoll:		diceRoll(message, response); 	break;
 		case Game_Turn: 		turn(message);		break;
 		case Game_Move: 		move(message);		break;
 		case Game_Buy: 			buy(message);		break;
@@ -222,29 +222,28 @@ void deleteRoom(int roomID)
 {
 	printf("room size : %d\n", sharedMemory.roomList.size());
 	for (list<game_room>::iterator itri = sharedMemory.roomList.begin(); itri != sharedMemory.roomList.end(); )	{
-		if( itri->roomID == roomID )	
+		if( itri->roomID == roomID )
 			itri = sharedMemory.roomList.erase(itri);
 		else
 			itri++;
 	}
 }
 
-void *game_thread(void *arg){
+void *game_thread(void *arg) {
 	printf("game thread start\n");
 	pthread_mutex_init(&mutex_lock, NULL);
-	
+
 	game_room *current_game = &sharedMemory.roomList.back();
-	
-	while(1) {	
+
+	while(1) {
 		//모두 나가면 게임 스레드 종료
 		if( current_game->userCount == 0 )	{
 			deleteRoom(current_game->roomID);
-			// pthread_mutex_unlock(&mutex_lock);
 			pthread_exit((void *)0);
 		}
 
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
-		while( current_game->messageQueue.empty() ) { 
+		while( current_game->messageQueue.empty() ) {
 			//모두 나가면 게임 스레드 종료
 			if( current_game->userCount == 0 )	{
 				deleteRoom(current_game->roomID);
@@ -258,7 +257,12 @@ void *game_thread(void *arg){
 		current_game->messageQueue.pop();
 		pthread_mutex_unlock(&mutex_lock);
 
-		gameManager(&message);	// 게임 메시지 처리해줘야함 !!!!!!!!!!!!!!! (지금 segment fault 뜸뜸
+		Message response;
+		strcpy(response.identifier, "GOMIN");
+		response.category[Major] = message.category[Major];
+		response.category[Minor] = message.category[Minor];
+
+		gameManager(&message, &response);	// 게임 메시지 처리해줘야함 !!!!!!!!!!!!!!! (지금 segment fault 뜸뜸
 	}
 }
 
@@ -267,7 +271,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	game_room game_room_info;
 	userInfo user_info;
 	char *save_ptr;
-	
+
 	user_info.number = atoi(strtok_r(message->data, DELIM, &save_ptr));
 	user_info.FD = clientFD;
 	string title = strtok_r(NULL, DELIM, &save_ptr);
@@ -298,13 +302,13 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	// make room in shared memory
 	sharedMemory.roomList.push_back(game_room_info);
 	pthread_mutex_unlock(&mutex_lock);
-	
+
 	printf("room created. room size : %d\n", sharedMemory.roomList.size());
 
 	// create game thread
 	pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
 
-	// make response contains room id 
+	// make response contains room id
 	strcpy(response->data, to_string(game_room_info.roomID).c_str());
 }
 

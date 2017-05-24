@@ -18,6 +18,8 @@ struct userInfo	{
 	int FD;			// file descriptor
 };
 
+
+
 struct game_room {
 	int roomID;	// room id(thread num)
 	int status;			// game status (wait, play)

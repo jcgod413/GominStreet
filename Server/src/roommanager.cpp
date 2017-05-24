@@ -15,7 +15,6 @@ using namespace std;
 
 extern shared_memory sharedMemory;
 extern bool room_number[MAX_ROOM];
-extern pthread_mutex_t mutex_lock;
 
 void listRoom(Message *message, Message *response, int clientFD) {
     string room = to_string(sharedMemory.roomList.size());
@@ -32,7 +31,7 @@ void listRoom(Message *message, Message *response, int clientFD) {
         write(clientFD, response, PACKET_SIZE);
         printf("room info : %s\n", response->data);
     }
-    
+
     memset(response->data, 0, sizeof(response->data));
 }
 
@@ -63,7 +62,7 @@ void enterRoom(Message *message, Message *response, int clientFD) {
 
   current_game->userCount++;
   current_game->userList.push_back(user_info);
-  
+
   // success response
   strcpy(response->data, "1");
 
@@ -101,12 +100,12 @@ void exitRoom(Message *message, Message *response) {
     // exitAlertRoom(current_game, exit_user);
 }
 
-void enterAlertRoom(game_room *current_game, int userID) {  
+void enterAlertRoom(game_room *current_game, int userID) {
   Message response;
   strcpy(response.identifier, "GOMIN");
   response.category[Major] = Major_Room;
   response.category[Minor] = Room_Alert_Enter;
-  
+
   strcpy(response.data, to_string(userID).c_str());
   printf("<%d번 방에 user%d이 입장>\n", current_game->roomID, userID);
   for(int i = 0; i < current_game->userCount; i++) {
@@ -116,12 +115,12 @@ void enterAlertRoom(game_room *current_game, int userID) {
   }
 }
 
-void exitAlertRoom(game_room *current_game, int userID) {  
+void exitAlertRoom(game_room *current_game, int userID) {
   Message response;
   strcpy(response.identifier, "GOMIN");
   response.category[Major] = Major_Room;
   response.category[Minor] = Room_Alert_Exit;
-  
+
   strcpy(response.data, to_string(userID).c_str());
   printf("<%d번 방에 user%d이 퇴장>\n", current_game->roomID, userID);
   for(int i = 0; i < current_game->userCount; i++) {
@@ -154,7 +153,7 @@ void startRoom(Message *message, Message *response) {
 
   // game_room 상태 변경
 	current_game->status = PLAY;
-	current_game->turn = user[0];
+	current_game->turn = current_game->roomLeader;
 
   // 모든 유저에게 게임 시작을 알림
   strcpy(response->data, "1");
