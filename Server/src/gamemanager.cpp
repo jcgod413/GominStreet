@@ -137,22 +137,45 @@ void buy(Message *message, Message *response) {
     write(it2->FD, response, PACKET_SIZE);
 }
 
-void pay(Message *message)
-{
+
+void pay(Message *message) {
   //돈이 부족할 경우
-    //소유 음식점이 있을 경우 가격에 맞는 가장 싼거부터 팔아버리고 알림
+    //소유 음식점이 있을 경우 랜덤으로 팔아버리고 알림
     //소유 음식점도 없이 없는 경우 파산=> 패배
   //돈이 충분할 경우
 }
 
-void goldKey(Message *message)
-{
-  //황금열쇠 랜덤으로 결정하여 알려주기
-  //rand()
+void goldKey(Message *message, Message *response) {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  game_room *current_game;
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
+    if(it->roomID == roomID) {
+      current_game = &*it;
+      break;
+    }
+  }
+
+  srand(time(NULL));
+  int key_number = rand() % gold_key_num + 1;
+  string key_value = to_string(key_number);
+
+  strcpy(response->data, key_value.c_str());
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
+    write(it2->FD, response, PACKET_SIZE);
+
+  goldKeyManager(key_number);
 }
 
-void isolation(Message *message)
-{
+void goldKeyManager(int key_number) {
+  switch (key_number) {
+    case 1:
+      break;
+  }
+}
+
+void isolation(Message *message) {
+
 }
 
 //돈을 증가시키는 프로토콜 => 황금열쇠

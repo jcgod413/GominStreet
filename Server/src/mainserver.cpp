@@ -145,7 +145,7 @@ void gameManager(Message *message, Message *response)
 		//case Game_Move: 		move(message);		break;
 		case Game_Buy: 			buy(message, response);		break;
 		case Game_Pay: 			pay(message);		break;
-		case Game_GoldKey: 		goldKey(message);	break;
+		case Game_GoldKey: 		goldKey(message, response);	break;
 		case Game_Isolation: 	isolation(message);	break;
 		default: printf("error : manager category %d\n", message->category[Minor]);
 	}
@@ -262,7 +262,7 @@ void *game_thread(void *arg) {
 		response.category[Major] = message.category[Major];
 		response.category[Minor] = message.category[Minor];
 
-		gameManager(&message, &response);	// 게임 메시지 처리해줘야함 !!!!!!!!!!!!!!! (지금 segment fault 뜸뜸
+		gameManager(&message, &response);
 	}
 }
 
