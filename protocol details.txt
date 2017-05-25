@@ -30,7 +30,7 @@
 •	Game_DiceRoll
 : (C->S)[Room_ID], (S->C)[Turn] [Dice_Number]
 •	Game_Turn
-: [Room_ID] [User_ID] [UserN_ID] [Turn]
+: (C->S)[Room_ID], (S->C)[Turn]
 •	Game_Move
 : [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc]
 •	Game_Buy

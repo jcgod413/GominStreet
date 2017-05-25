@@ -44,19 +44,20 @@ void diceRoll(Message *message, Message *response) {
   }
   pthread_mutex_unlock(&mutex_lock);
 
-  string room = to_string(current_game->turn);
-  room = room + " " + to_string(dice_number);
+  string dice_info = to_string(current_game->turn);
+  dice_info = dice_info + " " + to_string(dice_number);
 
-  strcpy(response->data, room.c_str());
+  strcpy(response->data, dice_info.c_str());
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
     write(it2->FD, response, PACKET_SIZE);
   //식중독 고려
 }
 
-void turn(Message *message) {
+void turn(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game;
+
   pthread_mutex_lock(&mutex_lock);
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
@@ -83,6 +84,11 @@ void turn(Message *message) {
   if(nth == current_game->userCount)
     current_game->turn = current_game->userList.begin()->number;
 
+  string next_turn = to_string(current_game->turn);
+
+    strcpy(response->data, next_turn.c_str());
+    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
+      write(it2->FD, response, PACKET_SIZE);
     //식중독 고려
 }
 

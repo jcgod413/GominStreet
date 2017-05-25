@@ -141,7 +141,7 @@ void gameManager(Message *message, Message *response)
 {
 	switch( message->category[Minor] )	{
 		case Game_DiceRoll:		diceRoll(message, response); 	break;
-		case Game_Turn: 		turn(message);		break;
+		case Game_Turn: 		turn(message, response);		break;
 		case Game_Move: 		move(message);		break;
 		case Game_Buy: 			buy(message);		break;
 		case Game_Pay: 			pay(message);		break;
