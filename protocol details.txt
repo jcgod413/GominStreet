@@ -28,13 +28,13 @@
 
 <GameCate>
 •	Game_DiceRoll
-: (C->S)[Room_ID], (S->C)[Turn] [Dice_Number]
+: (C->S) [Room_ID]
 •	Game_Turn
-: (C->S)[Room_ID], (S->C)[Turn]
+: (C->S) [Room_ID], (S->C)[Turn]
 •	Game_Move
-: [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc]
+: (S->C) [Turn] [Dice_Number]
 •	Game_Buy
-: [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc] [Nth] [Money]
+: (C->S) [Room_ID] [Restaurant_Number], (S->C) 성공 시  / 실패 시 0
 •	Game_Pay
 : [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc] [Nth] [Money] [Owner]
 •	Game_GoldKey

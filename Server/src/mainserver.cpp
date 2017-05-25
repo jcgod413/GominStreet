@@ -143,7 +143,7 @@ void gameManager(Message *message, Message *response)
 		case Game_DiceRoll:		diceRoll(message, response); 	break;
 		case Game_Turn: 		turn(message, response);		break;
 		//case Game_Move: 		move(message);		break;
-		case Game_Buy: 			buy(message);		break;
+		case Game_Buy: 			buy(message, response);		break;
 		case Game_Pay: 			pay(message);		break;
 		case Game_GoldKey: 		goldKey(message);	break;
 		case Game_Isolation: 	isolation(message);	break;
@@ -274,6 +274,8 @@ void createRoom(Message *message, Message *response, int clientFD) {
 
 	user_info.number = atoi(strtok_r(message->data, DELIM, &save_ptr));
 	user_info.FD = clientFD;
+	user_info.money = 0;
+	user_info.rest_turn = 0;
 	string title = strtok_r(NULL, DELIM, &save_ptr);
 
 	for(int n = 1; n < MAX_ROOM; n++)	{

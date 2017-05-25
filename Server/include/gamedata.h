@@ -11,14 +11,21 @@ using namespace std;
 
 #define MAX_USER 4
 
+const int cycle_money = 50;//한 바퀴 돌 때마다 제공되는 금액
 enum game_status {WAIT, PLAY};
+
+struct restaurantInfo {
+	int money;
+	int owner;
+	int storeCount;
+};
 
 struct userInfo	{
 	int number;		// user index
 	int FD;			// file descriptor
+	int money;
+	int rest_turn;
 };
-
-
 
 struct game_room {
 	int roomID;	// room id(thread num)
@@ -28,6 +35,7 @@ struct game_room {
 	int userCount; //Number of users
 	int roomLeader; //방장
 	list<userInfo> userList;		// user list
+	restaurantInfo restaurant_info[30];
 	queue<Message> messageQueue;	// message queue (raw message)
 };
 

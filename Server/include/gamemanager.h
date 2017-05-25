@@ -7,7 +7,7 @@
 void diceRoll(Message *, Message *);
 void turn(Message *, Message *);
 void move(Message *, game_room *, int);
-void buy(Message *);
+void buy(Message *, Message *);
 void pay(Message *);
 void goldKey(Message *);
 void isolation(Message *);

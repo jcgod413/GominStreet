@@ -22,15 +22,6 @@ extern pthread_mutex_t mutex_lock;
 //식중독을 고려해야 하는 함수 : diceRoll, turn, move, isolation
 //mutex
 
-/*
-void common_message(Message *message, char *roomID_str, char *user[], char *turn, char *save_ptr) {
-  roomID_str = strtok_r(message->data, DELIM, &save_ptr);
-  for(int i = 0; i < 4; i++)
-    user[i] = strtok_r(NULL, DELIM, &save_ptr);
-  turn = strtok_r(NULL, DELIM, &save_ptr);
-}
-*/
-
 void diceRoll(Message *message, Message *response) {
   srand(time(NULL));
   int dice_number = rand() % 6 + 1;
@@ -101,11 +92,49 @@ void move(Message *response, game_room *current_game, int move_number) {
     write(it->FD, response, PACKET_SIZE);
 }
 
-void buy(Message *message) {
-  //현재 남은 금액 체크
-  //돈이 부족할 경우 -> 0
-  //돈이 충분할 경우
-  //호점수
+void buy(Message *message, Message *response) {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  int restaurant_number = atoi(strtok_r(NULL, DELIM, &save_ptr));
+  game_room *current_game;
+
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
+    if(it->roomID == roomID) {
+      current_game = &*it;
+      break;
+    }
+  }
+
+  userInfo *current_user;
+  int turn = current_game->turn;
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
+    if(it2->number == turn) {
+      current_user = &*it2;
+      break;
+    }
+  }
+
+  if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
+    strcpy(response->data, "0");
+    write(current_user->FD, response, PACKET_SIZE);
+    return;
+  }
+
+  if(current_game->restaurant_info[restaurant_number].storeCount >= 3
+    || current_game->restaurant_info[restaurant_number].owner != current_user->number) {
+    strcpy(response->data, "0");
+    write(current_user->FD, response, PACKET_SIZE);
+    return;
+  }
+
+  if(current_game->restaurant_info[restaurant_number].storeCount == 0)
+    current_game->restaurant_info[restaurant_number].owner = current_user->number;
+  current_game->restaurant_info[restaurant_number].storeCount++;
+  current_user->money -= current_game->restaurant_info[restaurant_number].money;
+
+  strcpy(response->data, "1");
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
+    write(it2->FD, response, PACKET_SIZE);
 }
 
 void pay(Message *message)
