@@ -19,6 +19,9 @@ using namespace std;
 extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
 
+//식중독을 고려해야 하는 함수 : diceRoll, turn, move, isolation
+//mutex
+
 /*
 void common_message(Message *message, char *roomID_str, char *user[], char *turn, char *save_ptr) {
   roomID_str = strtok_r(message->data, DELIM, &save_ptr);
@@ -35,22 +38,18 @@ void diceRoll(Message *message, Message *response) {
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
 
   game_room *current_game;
-  pthread_mutex_lock(&mutex_lock);
+  //pthread_mutex_lock(&mutex_lock);
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
       current_game = &*it;
       break;
     }
   }
-  pthread_mutex_unlock(&mutex_lock);
+  //pthread_mutex_unlock(&mutex_lock);
 
-  string dice_info = to_string(current_game->turn);
-  dice_info = dice_info + " " + to_string(dice_number);
-
-  strcpy(response->data, dice_info.c_str());
-  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-    write(it2->FD, response, PACKET_SIZE);
   //식중독 고려
+
+  move(response, current_game, dice_number);
 }
 
 void turn(Message *message, Message *response) {
@@ -58,14 +57,14 @@ void turn(Message *message, Message *response) {
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game;
 
-  pthread_mutex_lock(&mutex_lock);
+  //pthread_mutex_lock(&mutex_lock);
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
       current_game = &*it;
       break;
     }
   }
-  pthread_mutex_unlock(&mutex_lock);
+  //pthread_mutex_unlock(&mutex_lock);
 
   int nth = 0;
   bool current_turn = false;
@@ -92,30 +91,42 @@ void turn(Message *message, Message *response) {
     //식중독 고려
 }
 
-void move(Message *message) {
-  //주사위 기반으로 움직인다
-  //황금열쇠에서 움직여야 할 때
+void move(Message *response, game_room *current_game, int move_number) {
+  //turn에 해당하는 클라이언트 말을 move_number 만큼 이동하라고 모든 클라이언트에게 알려주기
+  string move_info = to_string(current_game->turn);
+  move_info = move_info + " " + to_string(move_number);
+
+  strcpy(response->data, move_info.c_str());
+  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it)
+    write(it->FD, response, PACKET_SIZE);
 }
 
-void buy(Message *message)
-{
-  //돈 체크
-  //
+void buy(Message *message) {
+  //현재 남은 금액 체크
+  //돈이 부족할 경우 -> 0
+  //돈이 충분할 경우
+  //호점수
 }
 
 void pay(Message *message)
 {
-  //돈 없을 때
+  //돈이 부족할 경우
+    //소유 음식점이 있을 경우 가격에 맞는 가장 싼거부터 팔아버리고 알림
+    //소유 음식점도 없이 없는 경우 파산=> 패배
+  //돈이 충분할 경우
 }
 
 void goldKey(Message *message)
 {
+  //황금열쇠 랜덤으로 결정하여 알려주기
   //rand()
 }
 
 void isolation(Message *message)
 {
-
 }
+
+//돈을 증가시키는 프로토콜 => 황금열쇠
+//게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 
 #endif
