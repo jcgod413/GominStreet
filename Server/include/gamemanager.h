@@ -15,5 +15,6 @@ void goldKey(Message *, Message *);
 void goldKeyManager(int);
 void isolation(Message *);
 game_room *findCurrentGame(int roomID);
-
+userInfo *findCurrentUser(game_room *, int userID);
+void sendAllUser(game_room *, Message *);
 #endif

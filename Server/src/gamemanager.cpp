@@ -34,6 +34,7 @@ void diceRoll(Message *message, Message *response) {
   move(response, current_game, dice_number);
 }
 
+// 한 턴을 증가시켜준 후 모든 유저에게 해당정보를 알림
 void turn(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
@@ -56,11 +57,10 @@ void turn(Message *message, Message *response) {
   if(nth == current_game->userCount)
     current_game->turn = current_game->userList.begin()->number;
 
-  string next_turn = to_string(current_game->turn);
+    string next_turn = to_string(current_game->turn);
 
     strcpy(response->data, next_turn.c_str());
-    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-      write(it2->FD, response, PACKET_SIZE);
+    sendAllUser(current_game, response);
     //식중독 고려
 }
 
@@ -80,14 +80,9 @@ void buy(Message *message, Message *response) {
   int restaurant_number = atoi(strtok_r(NULL, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
 
-  userInfo *current_user;
   int turn = current_game->turn;
-  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
-    if(it2->number == turn) {
-      current_user = &*it2;
-      break;
-    }
-  }
+  userInfo *current_user = findCurrentUser(current_game, turn);
+  
 
   if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
     strcpy(response->data, "0");
@@ -108,8 +103,7 @@ void buy(Message *message, Message *response) {
   current_user->money -= current_game->restaurant_info[restaurant_number].money;
 
   strcpy(response->data, "1");
-  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-    write(it2->FD, response, PACKET_SIZE);
+  sendAllUser(current_game, response);
 }
 
 
@@ -150,8 +144,7 @@ void isolation(Message *message) {
 //돈을 증가시키는 프로토콜 => 황금열쇠
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 
-game_room *findCurrentGame(int roomID)
-{
+game_room *findCurrentGame(int roomID)  {
   game_room *current_game;
   //pthread_mutex_lock(&mutex_lock);
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
@@ -162,6 +155,24 @@ game_room *findCurrentGame(int roomID)
   }
   //pthread_mutex_unlock(&mutex_lock);
   return current_game;
+}
+
+userInfo *findCurrentUser(game_room *current_game, int turn)  {
+  userInfo *current_user;
+  //pthread_mutex_lock(&mutex_lock);
+  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
+    if(it->number == turn) {
+      current_user = &*it;
+      break;
+    }
+  }
+  //pthread_mutex_unlock(&mutex_lock);
+  return current_user;
+}
+
+void sendAllUser(game_room *current_game, Message *response) {
+  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it)
+    write(it->FD, response, PACKET_SIZE);
 }
 
 #endif
