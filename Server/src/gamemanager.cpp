@@ -27,17 +27,8 @@ void diceRoll(Message *message, Message *response) {
   int dice_number = rand() % 6 + 1;
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-
-  game_room *current_game;
-  //pthread_mutex_lock(&mutex_lock);
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
-    if(it->roomID == roomID) {
-      current_game = &*it;
-      break;
-    }
-  }
-  //pthread_mutex_unlock(&mutex_lock);
-
+  game_room *current_game = findCurrentGame(roomID);
+  
   //식중독 고려
 
   move(response, current_game, dice_number);
@@ -46,16 +37,7 @@ void diceRoll(Message *message, Message *response) {
 void turn(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  game_room *current_game;
-
-  //pthread_mutex_lock(&mutex_lock);
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
-    if(it->roomID == roomID) {
-      current_game = &*it;
-      break;
-    }
-  }
-  //pthread_mutex_unlock(&mutex_lock);
+  game_room *current_game = findCurrentGame(roomID);
 
   int nth = 0;
   bool current_turn = false;
@@ -96,14 +78,7 @@ void buy(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   int restaurant_number = atoi(strtok_r(NULL, DELIM, &save_ptr));
-  game_room *current_game;
-
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
-    if(it->roomID == roomID) {
-      current_game = &*it;
-      break;
-    }
-  }
+  game_room *current_game = findCurrentGame(roomID);
 
   userInfo *current_user;
   int turn = current_game->turn;
@@ -148,13 +123,7 @@ void pay(Message *message) {
 void goldKey(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  game_room *current_game;
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
-    if(it->roomID == roomID) {
-      current_game = &*it;
-      break;
-    }
-  }
+  game_room *current_game = findCurrentGame(roomID);
 
   srand(time(NULL));
   int key_number = rand() % gold_key_num + 1;
@@ -180,5 +149,19 @@ void isolation(Message *message) {
 
 //돈을 증가시키는 프로토콜 => 황금열쇠
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
+
+game_room *findCurrentGame(int roomID)
+{
+  game_room *current_game;
+  //pthread_mutex_lock(&mutex_lock);
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
+    if(it->roomID == roomID) {
+      current_game = &*it;
+      break;
+    }
+  }
+  //pthread_mutex_unlock(&mutex_lock);
+  return current_game;
+}
 
 #endif

@@ -14,5 +14,6 @@ void pay(Message *);
 void goldKey(Message *, Message *);
 void goldKeyManager(int);
 void isolation(Message *);
+game_room *findCurrentGame(int roomID);
 
 #endif

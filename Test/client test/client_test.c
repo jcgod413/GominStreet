@@ -97,6 +97,7 @@ int main(int argc, char *argv[]) {
 				case 0:
 					strcat(message, "0");
 					strcat(message, " 1");	// id
+					strcat(message, " GominStreetGame!");	// title
 					break;
 				case 1:
 					strcat(message, "1");
@@ -112,7 +113,7 @@ int main(int argc, char *argv[]) {
 					strcat(message, "3");
 					strcat(message, " 1");	// room id
 					strcat(message, " 1");	// id
-					printf("message !!!! : %s", message);
+					printf("message !!!! : %s\n", message);
 					//exitRoom(message, response);
 					break;
 				case 4:
