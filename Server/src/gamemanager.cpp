@@ -24,12 +24,22 @@ extern pthread_mutex_t mutex_lock;
 
 void diceRoll(Message *message, Message *response) {
   srand(time(NULL));
-  int dice_number = rand() % 6 + 1;
+  int dice_number = rand() % 12 + 1;
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-  
-  move(response, current_game, dice_number);
+  userInfo current_user = findCurrentUser(current_game, current_game->turn);
+  string res;
+
+  if( current_user->rest_turn > 0 )  // ISOLATION, OUT 인 경우
+    res = to_string(current_game->turn) + " " + to_string(current_user->rest_turn);
+  else  {
+    res = to_string(current_game->turn) + " " + to_string(dice_number);
+    move(current_game, dice_number);
+  }
+
+  strcpy(response->data, res.c_str());
+  sendAllUser(current_game, response);
 }
 
 // 한 턴을 증가시켜준 후 모든 유저에게 해당정보를 알림
@@ -43,9 +53,7 @@ void turn(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   // 움직일 수 없는 유저를 통과시키기 위한 코드
   // 무인도에 걸리지 않은 유저는 그냥 통과
-  while( current_user->rest_turn > 0 && current_user->rest_turn <= ISOLATION ) {  
-    current_user->rest_turn--;
-    //////////////////// 스킵되는 턴에 response 날려줄지 안날려줄지 결정
+  while( current_user->rest_turn == OUT ) {  
     current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
     current_user = findCurrentUser(current_game, current_game->turn);
   }
@@ -54,15 +62,15 @@ void turn(Message *message, Message *response) {
   sendAllUser(current_game, response);
 }
 
-void move(Message *response, game_room *current_game, int move_number) {
-  //turn에 해당하는 클라이언트 말을 move_number 만큼 이동하라고 모든 클라이언트에게 알려주기
-  string move_info = to_string(current_game->turn);
-  move_info = move_info + " " + to_string(move_number);
-
-  strcpy(response->data, move_info.c_str());
+void move(game_room *current_game, int move_number) {
+  Message response;
+  strcpy(response.identifier, "GOMIN");
+  response.category[Major] = Major_Room;
+  response.category[Minor] = Room_Alert_Exit;
+  
+  string res = to_string(current_game->turn) + " " + to_string(move_number);
+  strcpy(response.data, res.c_str());
   sendAllUser(current_game, response);
-
-  // 한바퀴 돌았을때 월급주기
 }
 
 void buy(Message *message, Message *response) {
@@ -153,15 +161,20 @@ void goldKeyManager(int key_number) {
   // 4. 고민사거리 발전기금 내기
   // 5. 착한식당 선정
   switch (key_number) {
-    case 1:
+    case 1: 
+      // 건물 하나 찾아서 없애버리기  (건물팔기 함수 재사용)
       break;
     case 2:
+      // move 호출
       break;
     case 3:
+      // move 호출
       break;
     case 4:
+      // pay 호출
       break;
     case 5:
+      // pay 호출
       break;
   }
 }
@@ -174,6 +187,16 @@ void isolation(Message *message) {
   userInfo *current_user = findCurrentUser(current_game, turn);
   
   current_user->rest_turn = ISOLATION;
+}
+
+void salary(Message *message) {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  game_room *current_game = findCurrentGame(roomID);
+  int turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, turn);
+
+  current_user->money += SALARY;
 }
 
 //돈을 증가시키는 프로토콜 => 황금열쇠

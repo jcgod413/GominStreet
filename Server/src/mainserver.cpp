@@ -142,11 +142,11 @@ void gameManager(Message *message, Message *response)
 	switch( message->category[Minor] )	{
 		case Game_DiceRoll:		diceRoll(message, response); 	break;
 		case Game_Turn: 		turn(message, response);		break;
-		//case Game_Move: 		move(message);		break;
 		case Game_Buy: 			buy(message, response);		break;
 		case Game_Pay: 			pay(message, response);		break;
 		case Game_GoldKey: 		goldKey(message, response);	break;
-		case Game_Isolation: 	isolation(message);	break;
+		case Game_Isolation: 	isolation(message);			break;
+		case Game_Salary:		salary(message);			break;
 		default: printf("error : manager category %d\n", message->category[Minor]);
 	}
 }
@@ -158,9 +158,7 @@ void *communication_thread(void *arg){
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
 
-	/* test */
 	printf("thread created. client fd : %d\n", clientFD);
-	/* test */
 
 	while( (readSize += read(clientFD, (char*)&message, PACKET_SIZE-readSize)) >= 0 ) 	{
 		if( readSize < PACKET_SIZE )
@@ -188,10 +186,12 @@ void *communication_thread(void *arg){
 		switch( message.category[Major] )	{
 			case Major_User:
 				userManager(&message, &response);
+				sendResponse(clientFD, &response);
 				break;
 
 			case Major_Room:
 				roomManager(&message, &response, clientFD);
+				sendResponse(clientFD, &response);
 				break;
 
 			case Major_Game:
@@ -214,7 +214,6 @@ void *communication_thread(void *arg){
 				printf("error : major category %d\n", message.category[Major]);
 				break;
 		}
-		sendResponse(clientFD, &response);
 	}
 }
 

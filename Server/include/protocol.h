@@ -49,6 +49,7 @@ enum GameCate	{
     Game_Pay,
     Game_GoldKey,
     Game_Isolation,
+    Game_Salary,
 };
 
 struct Message  {
