@@ -61,6 +61,8 @@ void move(Message *response, game_room *current_game, int move_number) {
 
   strcpy(response->data, move_info.c_str());
   sendAllUser(current_game, response);
+
+  // 한바퀴 돌았을때 월급주기
 }
 
 void buy(Message *message, Message *response) {
@@ -93,11 +95,40 @@ void buy(Message *message, Message *response) {
   sendAllUser(current_game, response);
 }
 
-void pay(Message *message) {
+void pay(Message *message, Message *response) {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  game_room *current_game = findCurrentGame(roomID);
+  int turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, turn);
+  int target = atoi(strtok_r(NULL, DELIM, &save_ptr));
+  userInfo *target_user;
+  if( target == 0 ) {// system 
+    // shared memory에 시스템 유저 가리키기(무한 돈을 가지고 있는)
+  } 
+  else  {
+    target_user = findCurrentUser(current_game, target);  
+  }
+  int money = atoi(strtok_r(NULL, DELIM, &save_ptr));
+
   //돈이 부족할 경우
-    //소유 음식점이 있을 경우 랜덤으로 팔아버리고 알림
-    //소유 음식점도 없이 없는 경우 파산=> 패배
-  //돈이 충분할 경우
+  //소유 음식점이 있을 경우 팔아버리고 알림   // iterator로 하나씩 돌면서 자기 보유 금액이 목표금액보다 크거나 같을때까지 땅을 판매
+  if( current_user->money < money ) {
+    // sell restaurant
+
+    // 땅을 다 판매해도 목표금액보다 작은경우 파산처리. 
+    if( current_user->money < money ) {
+      // 파산
+      // (rest_turn = 9)
+      return;
+    }
+  }
+  
+  // 돈이 충분할 경우
+  current_user->money -= money;
+  target_user->money += money;
+  string res = "1 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
+  strcpy(response->data, res.c_str());
 }
 
 void goldKey(Message *message, Message *response) {
@@ -110,21 +141,39 @@ void goldKey(Message *message, Message *response) {
   string key_value = to_string(key_number);
 
   strcpy(response->data, key_value.c_str());
-  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-    write(it2->FD, response, PACKET_SIZE);
+  sendAllUser(current_game, response);
 
   goldKeyManager(key_number);
 }
 
 void goldKeyManager(int key_number) {
+  // 1. 폐점
+  // 2. 앞 이동 
+  // 3. 뒤 이동 
+  // 4. 고민사거리 발전기금 내기
+  // 5. 착한식당 선정
   switch (key_number) {
     case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    case 5:
       break;
   }
 }
 
 void isolation(Message *message) {
-
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  game_room *current_game = findCurrentGame(roomID);
+  int turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, turn);
+  
+  current_user->rest_turn = ISOLATION;
 }
 
 //돈을 증가시키는 프로토콜 => 황금열쇠

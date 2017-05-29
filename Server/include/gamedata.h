@@ -11,7 +11,7 @@ using namespace std;
 
 #define MAX_USER 4
 
-#define ISOLATION 3
+#define ISOLATION 2	// 2턴 쉬고 3번째부터 턴받기
 #define OUT 9
 
 const int cycle_money = 50;//한 바퀴 돌 때마다 제공되는 금액

@@ -4,13 +4,14 @@
 #include "protocol.h"
 #include "gamedata.h"
 
-const int gold_key_num = 10;//개수 미정
+const int gold_key_num = 5;
+
 
 void diceRoll(Message *, Message *);
 void turn(Message *, Message *);
 void move(Message *, game_room *, int);
 void buy(Message *, Message *);
-void pay(Message *);
+void pay(Message *, Message *);
 void goldKey(Message *, Message *);
 void goldKeyManager(int);
 void isolation(Message *);

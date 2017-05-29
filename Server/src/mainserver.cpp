@@ -144,7 +144,7 @@ void gameManager(Message *message, Message *response)
 		case Game_Turn: 		turn(message, response);		break;
 		//case Game_Move: 		move(message);		break;
 		case Game_Buy: 			buy(message, response);		break;
-		case Game_Pay: 			pay(message);		break;
+		case Game_Pay: 			pay(message, response);		break;
 		case Game_GoldKey: 		goldKey(message, response);	break;
 		case Game_Isolation: 	isolation(message);	break;
 		default: printf("error : manager category %d\n", message->category[Minor]);

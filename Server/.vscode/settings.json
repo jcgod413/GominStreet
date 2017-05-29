@@ -37,6 +37,8 @@
         "ratio": "cpp",
         "__locale": "cpp",
         "__bit_reference": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "__functional_03": "cpp",
+        "functional": "cpp"
     }
 }
