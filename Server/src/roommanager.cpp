@@ -133,7 +133,7 @@ void exitAlertRoom(game_room *current_game, int userID) {
   }
 }
 
-int cost[30] = {200, 180, 170, 200, 200, 200, 200,
+int cost[31] = {0, 200, 180, 170, 200, 200, 200, 200,
                 200, 200, 200, 200, 200, 200, 200, 200,
                 200, 200, 200, 200, 200, 200, 200, 200,
                 200, 200, 200, 200, 200, 200, 200};
@@ -161,15 +161,15 @@ void startRoom(Message *message, Message *response) {
 
   // game_room 상태 변경
 	current_game->status = PLAY;
-	current_game->turn = current_game->roomLeader;
+  current_game->turn = 0;
 
-for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
     it2->money = init_money;
     it2->rest_turn = 0;
   }
 
   //음식점 초기화
-  for(int i = 0; i < 30; i++) {
+  for(int i = 1; i <= 30; i++) {
     current_game->restaurant_info[i].money = cost[i];
     current_game->restaurant_info[i].owner = 0;
   	current_game->restaurant_info[i].storeCount = 0;

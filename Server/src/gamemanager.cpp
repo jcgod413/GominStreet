@@ -29,8 +29,6 @@ void diceRoll(Message *message, Message *response) {
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
   
-  //식중독 고려
-
   move(response, current_game, dice_number);
 }
 
@@ -43,8 +41,11 @@ void turn(Message *message, Message *response) {
   // turn은 1~플레이어 수, 4명이면 1~4
   current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
-  while( current_user->rest_turn > 0 && current_user->rest_turn <= ISOLATION ) {
+  // 움직일 수 없는 유저를 통과시키기 위한 코드
+  // 무인도에 걸리지 않은 유저는 그냥 통과
+  while( current_user->rest_turn > 0 && current_user->rest_turn <= ISOLATION ) {  
     current_user->rest_turn--;
+    //////////////////// 스킵되는 턴에 response 날려줄지 안날려줄지 결정
     current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
     current_user = findCurrentUser(current_game, current_game->turn);
   }
@@ -59,8 +60,7 @@ void move(Message *response, game_room *current_game, int move_number) {
   move_info = move_info + " " + to_string(move_number);
 
   strcpy(response->data, move_info.c_str());
-  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it)
-    write(it->FD, response, PACKET_SIZE);
+  sendAllUser(current_game, response);
 }
 
 void buy(Message *message, Message *response) {
@@ -68,33 +68,30 @@ void buy(Message *message, Message *response) {
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   int restaurant_number = atoi(strtok_r(NULL, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-
   int turn = current_game->turn;
   userInfo *current_user = findCurrentUser(current_game, turn);
-  
 
+  // 돈이 없는 경우
   if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
     strcpy(response->data, "0");
-    write(current_user->FD, response, PACKET_SIZE);
+    sendAllUser(current_game, response);
     return;
   }
 
+  // 점포의 개수가 3개 이상이거나, 다른 주인인경우
   if(current_game->restaurant_info[restaurant_number].storeCount >= 3
-    || current_game->restaurant_info[restaurant_number].owner != current_user->number) {
+    || (current_game->restaurant_info[restaurant_number].owner > 0 && current_game->restaurant_info[restaurant_number].owner != turn)) {  
     strcpy(response->data, "0");
-    write(current_user->FD, response, PACKET_SIZE);
+    sendAllUser(current_game, response);
     return;
   }
 
-  if(current_game->restaurant_info[restaurant_number].storeCount == 0)
-    current_game->restaurant_info[restaurant_number].owner = current_user->number;
+  current_game->restaurant_info[restaurant_number].owner = turn;
   current_game->restaurant_info[restaurant_number].storeCount++;
   current_user->money -= current_game->restaurant_info[restaurant_number].money;
-
-  strcpy(response->data, "1");
+  strcpy(response->data, to_string(restaurant_number).c_str());
   sendAllUser(current_game, response);
 }
-
 
 void pay(Message *message) {
   //돈이 부족할 경우
@@ -148,9 +145,11 @@ game_room *findCurrentGame(int roomID)  {
 
 userInfo *findCurrentUser(game_room *current_game, int turn)  {
   userInfo *current_user;
+  int turnCnt = 0;
   //pthread_mutex_lock(&mutex_lock);
   for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
-    if(it->number == turn) {
+    turnCnt++;
+    if(turnCnt == turn) {
       current_user = &*it;
       break;
     }
@@ -160,8 +159,11 @@ userInfo *findCurrentUser(game_room *current_game, int turn)  {
 }
 
 void sendAllUser(game_room *current_game, Message *response) {
-  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it)
-    write(it->FD, response, PACKET_SIZE);
+  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
+    if( it->rest_turn <= ISOLATION )  {
+      write(it->FD, response, PACKET_SIZE);
+    }
+  }
 }
 
 #endif

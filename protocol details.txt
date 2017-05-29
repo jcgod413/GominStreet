@@ -34,7 +34,7 @@
 •	Game_Move
 : (S->C) [Turn] [Dice_Number]
 •	Game_Buy
-: (C->S) [Room_ID] [Restaurant_Number], (S->C) 성공 시 1 / 실패 시 0
+: (C->S) [Room_ID] [Restaurant_Number], (S->C) 성공 시 [Restaurant_Number] / 실패 시 0
 •	Game_Pay
 : [Room_ID] [User_ID] [UserN_ID] [Turn] [Plate_Loc] [Nth] [Money] [Owner]
 •	Game_GoldKey

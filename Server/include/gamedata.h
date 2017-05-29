@@ -38,7 +38,7 @@ struct game_room {
 	int userCount; //Number of users
 	int roomLeader; //방장
 	list<userInfo> userList;		// user list
-	restaurantInfo restaurant_info[30];
+	restaurantInfo restaurant_info[30];	// index는 1부터
 	queue<Message> messageQueue;	// message queue (raw message)
 };
 
