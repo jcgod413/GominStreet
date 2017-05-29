@@ -40,28 +40,17 @@ void turn(Message *message, Message *response) {
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
 
-  int nth = 0;
-  bool current_turn = false;
-  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
-    if(!current_turn)
-      nth++;
-    else {
-      current_game->turn = it2->number;
-      break;
-    }
-
-    if(current_game->turn == it2->number)
-      current_turn = true;
+  // turn은 1~플레이어 수, 4명이면 1~4
+  current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
+  userInfo *current_user = findCurrentUser(current_game, current_game->turn);
+  while( current_user->rest_turn > 0 && current_user->rest_turn <= ISOLATION ) {
+    current_user->rest_turn--;
+    current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
+    current_user = findCurrentUser(current_game, current_game->turn);
   }
 
-  if(nth == current_game->userCount)
-    current_game->turn = current_game->userList.begin()->number;
-
-    string next_turn = to_string(current_game->turn);
-
-    strcpy(response->data, next_turn.c_str());
-    sendAllUser(current_game, response);
-    //식중독 고려
+  strcpy(response->data, to_string(current_game->turn).c_str());
+  sendAllUser(current_game, response);
 }
 
 void move(Message *response, game_room *current_game, int move_number) {
