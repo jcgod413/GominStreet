@@ -12,6 +12,8 @@ void turn(Message *, Message *);
 void move(game_room *, int);
 void buy(Message *, Message *);
 void pay(Message *, Message *);
+int findRestaurantOwner(game_room *, userInfo *, bool *);
+void sellRestaurant(game_room *, userInfo *, int, bool);
 void goldKey(Message *, Message *);
 void goldKeyManager(game_room *, int);
 void messageSetting(Message *, char, char);

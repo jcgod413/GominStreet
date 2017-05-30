@@ -19,10 +19,9 @@ using namespace std;
 extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
 
-//mutex
-
 void diceRoll(Message *message, Message *response) {
   srand(time(NULL));
+  //주사위 번호 1 ~ 12
   int dice_number = rand() % 12 + 1;
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
@@ -52,7 +51,7 @@ void turn(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   // 움직일 수 없는 유저를 통과시키기 위한 코드
   // 무인도에 걸리지 않은 유저는 그냥 통과
-  while( current_user->rest_turn == OUT ) {
+  while( current_user->rest_turn == OUT ) {/////////////////////?
     current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
     current_user = findCurrentUser(current_game, current_game->turn);
   }
@@ -61,6 +60,7 @@ void turn(Message *message, Message *response) {
   sendAllUser(current_game, response);
 }
 
+//move_number = 주사위 숫자 or 황금열쇠 이동 숫자
 void move(game_room *current_game, int move_number) {
   Message response;
   messageSetting(&response, Major_Game, Game_Move);
@@ -85,7 +85,7 @@ void buy(Message *message, Message *response) {
     return;
   }
 
-  // 점포의 개수가 3개 이상이거나, 다른 주인인경우
+  // 점포의 개수가 3개 이상이거나, 다른 주인인 경우
   if(current_game->restaurant_info[restaurant_number].storeCount >= 3
     || (current_game->restaurant_info[restaurant_number].owner > 0 && current_game->restaurant_info[restaurant_number].owner != turn)) {
     strcpy(response->data, "0");
@@ -108,23 +108,46 @@ void pay(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, turn);
   int target = atoi(strtok_r(NULL, DELIM, &save_ptr));
   userInfo *target_user;
-  if( target == 0 ) {// system
+  if( target == 0 ) {// system///////////////////////////////////////////////////
+
     // shared memory에 시스템 유저 가리키기(무한 돈을 가지고 있는)
   }
   else  {
     target_user = findCurrentUser(current_game, target);
   }
   int money = atoi(strtok_r(NULL, DELIM, &save_ptr));
-
+  string res;
   //돈이 부족할 경우
   //소유 음식점이 있을 경우 팔아버리고 알림   // iterator로 하나씩 돌면서 자기 보유 금액이 목표금액보다 크거나 같을때까지 땅을 판매
   if( current_user->money < money ) {
     // sell restaurant
+    bool has_restaurant[RESTAURANT_NUM];
+    memset(has_restaurant, 0, sizeof(has_restaurant));
+
+    int cnt = findRestaurantOwner(current_game, current_user, has_restaurant);
+
+    int restaurant_number = 0;
+
+    while(current_user->money < money && cnt > 0) {
+      for(int i = restaurant_number + 1; i < RESTAURANT_NUM; i++) {
+        if(has_restaurant[i]) {
+          restaurant_number = i;
+          has_restaurant[restaurant_number] = false;
+          cnt--;
+          break;
+        }
+      }
+
+      sellRestaurant(current_game, current_user, restaurant_number, true);
+    }
 
     // 땅을 다 판매해도 목표금액보다 작은경우 파산처리.
     if( current_user->money < money ) {
-      // 파산
-      // (rest_turn = 9)
+      current_user->rest_turn = OUT;
+      //turn이 target에게 지불해야 할 money가 없어서 파산하였습니다.
+      res = "0 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
+      strcpy(response->data, res.c_str());
+      sendAllUser(current_game, response);
       return;
     }
   }
@@ -132,9 +155,42 @@ void pay(Message *message, Message *response) {
   // 돈이 충분할 경우
   current_user->money -= money;
   target_user->money += money;
-  string res = "1 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
+  res = "1 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
   strcpy(response->data, res.c_str());
   sendAllUser(current_game, response);
+}
+
+int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
+  int cnt = 0;
+  for(int i = 0; i < RESTAURANT_NUM; i++) {
+    if(current_user->number == current_game->restaurant_info[i].owner) {
+      has_restaurant[i] = true;
+      cnt++;
+    }
+  }
+
+  return cnt;
+}
+
+void sellRestaurant(game_room *current_game, userInfo *current_user, int restaurant_number, bool flag) {
+  Message response;
+  messageSetting(&response, Major_Game, Game_Sell_Restaurant);
+  int owner = current_game->restaurant_info[restaurant_number].owner;
+  string res = to_string(current_game->roomID) + " " + to_string(owner) + " " + to_string(restaurant_number);
+  if(flag) {//판매인 경우 true, 강제 철거(세무조사)인 경우 false
+    int money = current_game->restaurant_info[restaurant_number].money;
+    int storeCount = current_game->restaurant_info[restaurant_number].storeCount;
+    //owner가 소유한 restaurant_number가 판매되었습니다.
+    res += " 1";
+    current_user->money +=  money * storeCount;
+  }
+  else//owner가 소유한 restaurant_number가 철거되었습니다.
+    res += " 0";
+  strcpy(response.data, res.c_str());
+  sendAllUser(current_game, &response);
+
+  current_game->restaurant_info[restaurant_number].owner = 0;
+  current_game->restaurant_info[restaurant_number].storeCount = 0;
 }
 
 void goldKey(Message *message, Message *response) {
@@ -213,7 +269,7 @@ void salary(Message *message) {
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 
 game_room *findCurrentGame(int roomID)  {
-  game_room *current_game;
+  game_room *current_game = NULL;
   //pthread_mutex_lock(&mutex_lock);
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
@@ -226,7 +282,7 @@ game_room *findCurrentGame(int roomID)  {
 }
 
 userInfo *findCurrentUser(game_room *current_game, int turn)  {
-  userInfo *current_user;
+  userInfo *current_user = NULL;
   int turnCnt = 0;
   //pthread_mutex_lock(&mutex_lock);
   for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {

@@ -16,6 +16,8 @@ using namespace std;
 
 #define SALARY 40
 
+#define RESTAURANT_NUM 31
+
 const int cycle_money = 50;//한 바퀴 돌 때마다 제공되는 금액
 enum game_status {WAIT, PLAY};
 
@@ -40,7 +42,7 @@ struct game_room {
 	int userCount; //Number of users
 	int roomLeader; //방장
 	list<userInfo> userList;		// user list
-	restaurantInfo restaurant_info[30];	// index는 1부터
+	restaurantInfo restaurant_info[RESTAURANT_NUM];	// index는 1부터
 	queue<Message> messageQueue;	// message queue (raw message)
 };
 

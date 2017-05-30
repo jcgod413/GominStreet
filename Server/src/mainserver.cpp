@@ -147,11 +147,12 @@ void gameManager(Message *message, Message *response)
 		case Game_GoldKey: 		goldKey(message, response);	break;
 		case Game_Isolation: 	isolation(message);			break;
 		case Game_Salary:		salary(message);			break;
+
 		default: printf("error : manager category %d\n", message->category[Minor]);
 	}
 }
 
-void *communication_thread(void *arg){
+void *communication_thread(void *arg) {
 	int clientFD;
 	ssize_t readSize = 0;
 	Message message;
@@ -215,11 +216,13 @@ void *communication_thread(void *arg){
 				break;
 		}
 	}
+
+	return NULL;
 }
 
 void deleteRoom(int roomID)
 {
-	printf("room size : %d\n", sharedMemory.roomList.size());
+	printf("room size : %lu\n", sharedMemory.roomList.size());
 	for (list<game_room>::iterator itri = sharedMemory.roomList.begin(); itri != sharedMemory.roomList.end(); )	{
 		if( itri->roomID == roomID )
 			itri = sharedMemory.roomList.erase(itri);
@@ -263,6 +266,8 @@ void *game_thread(void *arg) {
 
 		gameManager(&message, &response);
 	}
+
+	return NULL;
 }
 
 void createRoom(Message *message, Message *response, int clientFD) {
@@ -304,7 +309,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	sharedMemory.roomList.push_back(game_room_info);
 	pthread_mutex_unlock(&mutex_lock);
 
-	printf("room created. room size : %d\n", sharedMemory.roomList.size());
+	printf("room created. room size : %lu\n", sharedMemory.roomList.size());
 
 	// create game thread
 	pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);
