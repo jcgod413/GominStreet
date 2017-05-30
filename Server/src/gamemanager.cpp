@@ -63,9 +63,7 @@ void turn(Message *message, Message *response) {
 
 void move(game_room *current_game, int move_number) {
   Message response;
-  strcpy(response.identifier, "GOMIN");
-  response.category[Major] = Major_Room;
-  response.category[Minor] = Room_Alert_Exit;
+  messageSetting(&response, Major_Game, Game_Move);
 
   string res = to_string(current_game->turn) + " " + to_string(move_number);
   strcpy(response.data, res.c_str());
@@ -155,30 +153,29 @@ void goldKey(Message *message, Message *response) {
 }
 
 void goldKeyManager(game_room *current_game, int key_number) {
-  // 1. 폐점
-  // 2. 앞 이동
-  // 3. 뒤 이동
-  // 4. 고민사거리 발전기금 내기
   Message message, response;
+  string data;
   switch (key_number) {
-    case 1:
+    case 1:// 폐점
       // 건물 하나 찾아서 없애버리기  (건물팔기 함수 재사용)
       break;
-    case 2:
-      // move 호출
+    case 2:// 앞으로 이동
+      move(current_game, 3);
       break;
-    case 3:
-      // move 호출
+    case 3: // 뒤로 이동
+      move(current_game, -3);
       break;
-    case 4: //고민사거리 발전기금 내기
-      // pay 호출
+    case 4: // 고민사거리 발전기금 내기
       messageSetting(&message, Major_Game, Game_Pay);
+      data = to_string(current_game->roomID) + " " + "0 500";
+      strcpy(message.data, data.c_str());
+
       messageSetting(&response, Major_Game, Game_Pay);
       pay(&message, &response);
       break;
     case 5:// 착한식당 선정
       messageSetting(&message, Major_Game, Game_Pay);
-      string data = to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 500";
+      data = to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 500";
       strcpy(message.data, data.c_str());
 
       messageSetting(&response, Major_Game, Game_Pay);
