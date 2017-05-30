@@ -38,13 +38,13 @@
 •	Game_Pay
 : (C->S) [Room_ID] [TargetUser_ID] [Money], (S->C) 성공 시 [1] [준사람] [받은사람] [money] / 실패 시 [0] [준사람] [받은사람] [money]
 •	Game_GoldKey
-: (C->S) [Room_ID], (S->C) 성공 시 [Key_Value] / 실패 시 [0]
+: (C->S) [Room_ID], (S->C) 성공 시 [Key_Value] (Key_Value == 1 일 때는 [Key_Value] [Restaurant_Number]) / 실패 시 [0]
 •	Game_Isolation
 : (C->S) [Room_ID]
 •	Game_Salary
 : (C->S) [Room_ID]
 •	Game_Sell_Restaurant
-: (S->C) (i) 판매인 경우 [Room_ID] [Owner] [Restaurant_Number] [1] (ii) 철거인 경우 [Room_ID] [Owner] [Restaurant_Number] [0]
+: (S->C) 성공 시 (i) 판매인 경우 [1] [Room_ID] [Owner] [Restaurant_Number] [1] (ii) 철거인 경우 [1] [Room_ID] [Owner] [Restaurant_Number] [0], 실패 시 [0] [Room_ID] [turn]
 RoomNumber 1~
 UserNumber 1~
 GoldKeyNumber 1~
