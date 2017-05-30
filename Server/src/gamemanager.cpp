@@ -19,6 +19,10 @@ using namespace std;
 extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
 
+//게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
+// mutex 추가
+////////////////////? 이 부분 다시 확인
+
 void diceRoll(Message *message, Message *response) {
   srand(time(NULL));
   //주사위 번호 1 ~ 12
@@ -108,9 +112,12 @@ void pay(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, turn);
   int target = atoi(strtok_r(NULL, DELIM, &save_ptr));
   userInfo *target_user;
-  if( target == 0 ) {// system///////////////////////////////////////////////////
-
-    // shared memory에 시스템 유저 가리키기(무한 돈을 가지고 있는)
+  if( target == 0 ) {// system
+    target_user = (userInfo *) malloc(sizeof(userInfo));
+    target_user->number = 0;
+  	target_user->FD = 0;
+  	target_user->money = 0;
+  	target_user->rest_turn = 0;
   }
   else  {
     target_user = findCurrentUser(current_game, target);
@@ -158,6 +165,11 @@ void pay(Message *message, Message *response) {
   res = "1 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
   strcpy(response->data, res.c_str());
   sendAllUser(current_game, response);
+
+  if(target == 0) {
+    free(target_user);
+    target_user = NULL;
+  }
 }
 
 int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
@@ -264,9 +276,6 @@ void salary(Message *message) {
 
   current_user->money += SALARY;
 }
-
-//돈을 증가시키는 프로토콜 => 황금열쇠
-//게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 
 game_room *findCurrentGame(int roomID)  {
   game_room *current_game = NULL;
