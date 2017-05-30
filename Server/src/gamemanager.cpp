@@ -27,7 +27,7 @@ void diceRoll(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-  userInfo current_user = findCurrentUser(current_game, current_game->turn);
+  userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   string res;
 
   if( current_user->rest_turn > 0 )  // ISOLATION, OUT 인 경우
@@ -69,7 +69,7 @@ void move(game_room *current_game, int move_number) {
 
   string res = to_string(current_game->turn) + " " + to_string(move_number);
   strcpy(response.data, res.c_str());
-  sendAllUser(current_game, response);
+  sendAllUser(current_game, &response);
 }
 
 void buy(Message *message, Message *response) {
@@ -136,6 +136,7 @@ void pay(Message *message, Message *response) {
   target_user->money += money;
   string res = "1 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
   strcpy(response->data, res.c_str());
+  sendAllUser(current_game, response);
 }
 
 void goldKey(Message *message, Message *response) {
@@ -150,14 +151,15 @@ void goldKey(Message *message, Message *response) {
   strcpy(response->data, key_value.c_str());
   sendAllUser(current_game, response);
 
-  goldKeyManager(key_number);
+  goldKeyManager(current_game, key_number);
 }
 
-void goldKeyManager(int key_number) {
+void goldKeyManager(game_room *current_game, int key_number) {
   // 1. 폐점
   // 2. 앞 이동
   // 3. 뒤 이동
   // 4. 고민사거리 발전기금 내기
+  Message message, response;
   switch (key_number) {
     case 1:
       // 건물 하나 찾아서 없애버리기  (건물팔기 함수 재사용)
@@ -168,14 +170,26 @@ void goldKeyManager(int key_number) {
     case 3:
       // move 호출
       break;
-    case 4:
+    case 4: //고민사거리 발전기금 내기
       // pay 호출
+      messageSetting(&message, Major_Game, Game_Pay);
+      messageSetting(&response, Major_Game, Game_Pay);
+      pay(&message, &response);
       break;
-    case 5:// 5. 착한식당 선정
-      
-      // pay 호출
+    case 5:// 착한식당 선정
+      messageSetting(&message, Major_Game, Game_Pay);
+      string data = to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 500";
+      strcpy(message.data, data.c_str());
+
+      messageSetting(&response, Major_Game, Game_Pay);
+      pay(&message, &response);
       break;
   }
+}
+
+void messageSetting(Message *message, char c0, char c1) {
+  strcpy(message->identifier, "GOMIN");
+  sprintf(message->category, "%c%c", c0, c1);
 }
 
 void isolation(Message *message) {

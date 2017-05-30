@@ -9,11 +9,12 @@ const int gold_key_num = 5;
 
 void diceRoll(Message *, Message *);
 void turn(Message *, Message *);
-void move(Message *, int);
+void move(game_room *, int);
 void buy(Message *, Message *);
 void pay(Message *, Message *);
 void goldKey(Message *, Message *);
-void goldKeyManager(int);
+void goldKeyManager(game_room *, int);
+void messageSetting(Message *, char, char);
 void isolation(Message *);
 void salary(Message *);
 game_room *findCurrentGame(int roomID);
