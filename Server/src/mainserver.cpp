@@ -141,7 +141,6 @@ void gameManager(Message *message, Message *response)
 {
 	switch( message->category[Minor] )	{
 		case Game_DiceRoll:		diceRoll(message, response); 	break;
-		case Game_Turn: 		turn(message, response);		break;
 		case Game_Buy: 			buy(message, response);		break;
 		case Game_Pay: 			pay(message, response);		break;
 		case Game_GoldKey: 		goldKey(message, response);	break;
@@ -156,12 +155,14 @@ void *communication_thread(void *arg) {
 	int clientFD;
 	ssize_t readSize = 0;
 	Message message;
+	int received;
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
 
 	printf("thread created. client fd : %d\n", clientFD);
 
-	while( (readSize += read(clientFD, (char*)&message, PACKET_SIZE-readSize)) >= 0 ) 	{
+	while( (received = read(clientFD, (char*)&message, PACKET_SIZE-readSize)) >= 0 ) 	{
+		readSize += received;
 		if( readSize < PACKET_SIZE )
 			continue;
 		readSize = 0;
@@ -217,6 +218,7 @@ void *communication_thread(void *arg) {
 		}
 	}
 
+	printf("Connection Disconnected\n");
 	return NULL;
 }
 

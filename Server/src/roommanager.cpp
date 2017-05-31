@@ -5,6 +5,7 @@
 #include "roommanager.h"
 #include "gamedata.h"
 #include "protocol.h"
+#include "gamemanager.h"
 #include <iostream>
 #include <string.h>
 #include <list>
@@ -181,6 +182,8 @@ void startRoom(Message *message, Message *response) {
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
       if(it2->number == user[i])
         write(it2->FD, (char *)response, PACKET_SIZE);
+
+  turn(current_game);
 }
 
 #endif

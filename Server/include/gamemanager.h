@@ -8,7 +8,7 @@ const int gold_key_num = 5;
 
 
 void diceRoll(Message *, Message *);
-void turn(Message *, Message *);
+void turn(game_room *);
 void move(game_room *, int);
 void buy(Message *, Message *);
 void pay(Message *, Message *);

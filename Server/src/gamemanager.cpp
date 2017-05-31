@@ -44,10 +44,9 @@ void diceRoll(Message *message, Message *response) {
 }
 
 // 한 턴을 증가시켜준 후 모든 유저에게 해당정보를 알림
-void turn(Message *message, Message *response) {
-  char *save_ptr;
-  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  game_room *current_game = findCurrentGame(roomID);
+void turn(game_room *current_game) {
+  Message response;
+  messageSetting(&response, Major_Game, Game_Turn);  
 
   // turn은 1~플레이어 수, 4명이면 1~4
   current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
@@ -58,8 +57,8 @@ void turn(Message *message, Message *response) {
     current_user = findCurrentUser(current_game, current_game->turn);
   }
 
-  strcpy(response->data, to_string(current_game->turn).c_str());
-  sendAllUser(current_game, response);
+  strcpy(response.data, to_string(current_game->turn).c_str());
+  sendAllUser(current_game, &response);
 }
 
 //move_number = 주사위 숫자 or 황금열쇠 이동 숫자
@@ -84,6 +83,7 @@ void buy(Message *message, Message *response) {
   if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
     strcpy(response->data, "0");
     sendAllUser(current_game, response);
+    turn(current_game);
     return;
   }
 
@@ -92,6 +92,7 @@ void buy(Message *message, Message *response) {
     || (current_game->restaurant_info[restaurant_number].owner > 0 && current_game->restaurant_info[restaurant_number].owner != turn)) {
     strcpy(response->data, "0");
     sendAllUser(current_game, response);
+    turn(current_game);
     return;
   }
 
@@ -100,6 +101,8 @@ void buy(Message *message, Message *response) {
   current_user->money -= current_game->restaurant_info[restaurant_number].money;
   strcpy(response->data, to_string(restaurant_number).c_str());
   sendAllUser(current_game, response);
+
+  turn(current_game);
 }
 
 void pay(Message *message, Message *response) {
@@ -153,6 +156,7 @@ void pay(Message *message, Message *response) {
       res = "0 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
       strcpy(response->data, res.c_str());
       sendAllUser(current_game, response);
+      turn(current_game);
       return;
     }
   }
@@ -168,6 +172,8 @@ void pay(Message *message, Message *response) {
     free(target_user);
     target_user = NULL;
   }
+  
+  turn(current_game);
 }
 
 int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
@@ -224,6 +230,8 @@ void goldKey(Message *message, Message *response) {
   sendAllUser(current_game, response);
 
   goldKeyManager(current_game, key_number);
+
+  turn(current_game);
 }
 
 void goldKeyManager(game_room *current_game, int key_number) {
@@ -288,6 +296,8 @@ void isolation(Message *message) {
   userInfo *current_user = findCurrentUser(current_game, turn);
 
   current_user->rest_turn = ISOLATION;
+  
+  turn(current_game);
 }
 
 void salary(Message *message) {
@@ -300,6 +310,9 @@ void salary(Message *message) {
   current_user->money += SALARY;
 }
 
+
+//돈을 증가시키는 프로토콜 => 황금열쇠
+//게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 game_room *findCurrentGame(int roomID)  {
   game_room *current_game = NULL;
   //pthread_mutex_lock(&mutex_lock);
