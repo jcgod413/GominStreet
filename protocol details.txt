@@ -20,11 +20,11 @@
 •	Room_Exit
 : (C->S) [Room_ID] [User_ID]
 •	Room_Alert_Enter
-: (S->C) [User_ID]
+: (S->C) [User_Size] [User1_ID] ...
 •	Room_Alert_Exit
-: (S->C) [User_ID]
+: (S->C) [User_Size] [User1_ID] ...
 •	Room_Start
-: (C->S) [Room_ID] [UserN_ID] / (S->C) 성공 시 [1], 오류 시 [0]
+: (C->S) [Room_ID] / (S->C) 성공 시 [1], 오류 시 [0]
 
 <GameCate>
 •	Game_DiceRoll
