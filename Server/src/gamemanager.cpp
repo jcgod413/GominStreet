@@ -21,7 +21,6 @@ extern pthread_mutex_t mutex_lock;
 
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 // mutex 추가
-////////////////////? 이 부분 다시 확인
 
 void diceRoll(Message *message, Message *response) {
   srand(time(NULL));
@@ -34,7 +33,7 @@ void diceRoll(Message *message, Message *response) {
   string res;
 
   if( current_user->rest_turn > 0 )  // ISOLATION, OUT 인 경우
-    res = to_string(current_game->turn) + " " + to_string(current_user->rest_turn);
+    res = "0 " + to_string(current_user->rest_turn);
   else  {
     res = to_string(current_game->turn) + " " + to_string(dice_number);
     move(current_game, dice_number);
@@ -54,8 +53,7 @@ void turn(Message *message, Message *response) {
   current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   // 움직일 수 없는 유저를 통과시키기 위한 코드
-  // 무인도에 걸리지 않은 유저는 그냥 통과
-  while( current_user->rest_turn == OUT ) {/////////////////////?
+  while( current_user->rest_turn == OUT ) {
     current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
     current_user = findCurrentUser(current_game, current_game->turn);
   }
