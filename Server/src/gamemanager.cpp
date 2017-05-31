@@ -76,8 +76,8 @@ void buy(Message *message, Message *response) {
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   int restaurant_number = atoi(strtok_r(NULL, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-  int turn = current_game->turn;
-  userInfo *current_user = findCurrentUser(current_game, turn);
+  int current_turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, current_turn);
 
   // 돈이 없는 경우
   if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
@@ -89,14 +89,15 @@ void buy(Message *message, Message *response) {
 
   // 점포의 개수가 3개 이상이거나, 다른 주인인 경우
   if(current_game->restaurant_info[restaurant_number].storeCount >= 3
-    || (current_game->restaurant_info[restaurant_number].owner > 0 && current_game->restaurant_info[restaurant_number].owner != turn)) {
+    || (current_game->restaurant_info[restaurant_number].owner > 0 
+    && current_game->restaurant_info[restaurant_number].owner != current_turn)) {
     strcpy(response->data, "0");
     sendAllUser(current_game, response);
     turn(current_game);
     return;
   }
 
-  current_game->restaurant_info[restaurant_number].owner = turn;
+  current_game->restaurant_info[restaurant_number].owner = current_turn;
   current_game->restaurant_info[restaurant_number].storeCount++;
   current_user->money -= current_game->restaurant_info[restaurant_number].money;
   strcpy(response->data, to_string(restaurant_number).c_str());
@@ -109,8 +110,8 @@ void pay(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-  int turn = current_game->turn;
-  userInfo *current_user = findCurrentUser(current_game, turn);
+  int current_turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, current_turn);
   int target = atoi(strtok_r(NULL, DELIM, &save_ptr));
   userInfo *target_user;
   if( target == 0 ) {// system
@@ -153,7 +154,7 @@ void pay(Message *message, Message *response) {
     if( current_user->money < money ) {
       current_user->rest_turn = OUT;
       //turn이 target에게 지불해야 할 money가 없어서 파산하였습니다.
-      res = "0 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
+      res = "0 " + to_string(current_turn) + " " + to_string(target) + " " + to_string(money);
       strcpy(response->data, res.c_str());
       sendAllUser(current_game, response);
       turn(current_game);
@@ -164,7 +165,7 @@ void pay(Message *message, Message *response) {
   // 돈이 충분할 경우
   current_user->money -= money;
   target_user->money += money;
-  res = "1 " + to_string(turn) + " " + to_string(target) + " " + to_string(money);
+  res = "1 " + to_string(current_turn) + " " + to_string(target) + " " + to_string(money);
   strcpy(response->data, res.c_str());
   sendAllUser(current_game, response);
 
@@ -237,14 +238,14 @@ void goldKey(Message *message, Message *response) {
 void goldKeyManager(game_room *current_game, int key_number) {
   Message message, response;
   string data;
-  int turn, cnt, restaurant_number;
+  int current_turn, cnt, restaurant_number;
   bool has_restaurant[RESTAURANT_NUM];
   userInfo *current_user;
   switch (key_number) {
     case 1:// 폐점
       // 건물 하나 찾아서 없애버리기
-      turn = current_game->turn;
-      current_user = findCurrentUser(current_game, turn);
+      current_turn = current_game->turn;
+      current_user = findCurrentUser(current_game, current_turn);
       memset(has_restaurant, 0, sizeof(has_restaurant));
       cnt = findRestaurantOwner(current_game, current_user, has_restaurant);
       restaurant_number = 0;
@@ -292,8 +293,8 @@ void isolation(Message *message) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-  int turn = current_game->turn;
-  userInfo *current_user = findCurrentUser(current_game, turn);
+  int current_turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, current_turn);
 
   current_user->rest_turn = ISOLATION;
   
@@ -304,8 +305,8 @@ void salary(Message *message) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
-  int turn = current_game->turn;
-  userInfo *current_user = findCurrentUser(current_game, turn);
+  int current_turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, current_turn);
 
   current_user->money += SALARY;
 }
