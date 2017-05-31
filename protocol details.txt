@@ -42,9 +42,12 @@
 •	Game_Isolation
 : (C->S) [Room_ID]
 •	Game_Salary
-: (C->S) [Room_ID]
+: (S->C) [Turn]
 •	Game_Sell_Restaurant
 : (S->C) 성공 시 (i) 판매인 경우 [1] [Room_ID] [Owner] [Restaurant_Number] [1] (ii) 철거인 경우 [1] [Room_ID] [Owner] [Restaurant_Number] [0], 실패 시 [0] [Room_ID] [turn]
+•	Game_Visit
+: (C->S) [Room_ID] [Location]
+
 RoomNumber 1~
 UserNumber 1~
 GoldKeyNumber 1~

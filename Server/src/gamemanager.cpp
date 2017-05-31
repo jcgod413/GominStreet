@@ -19,6 +19,7 @@ using namespace std;
 extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
 
+//timeout
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 // mutex 추가
 
@@ -48,7 +49,7 @@ void diceRoll(Message *message, Message *response) {
 // 한 턴을 증가시켜준 후 모든 유저에게 해당정보를 알림
 void turn(game_room *current_game) {
   Message response;
-  messageSetting(&response, Major_Game, Game_Turn);  
+  messageSetting(&response, Major_Game, Game_Turn);
 
   // turn은 1~플레이어 수, 4명이면 1~4
   current_game->turn = (current_game->turn % current_game->userList.size());
@@ -99,7 +100,7 @@ void buy(Message *message, Message *response) {
 
   // 점포의 개수가 3개 이상이거나, 다른 주인인 경우
   if(current_game->restaurant_info[restaurant_number].storeCount >= 3
-    || (current_game->restaurant_info[restaurant_number].owner > 0 
+    || (current_game->restaurant_info[restaurant_number].owner > 0
     && current_game->restaurant_info[restaurant_number].owner != current_turn)) {
     strcpy(response->data, "0");
     sendAllUser(current_game, response);
@@ -179,6 +180,9 @@ void pay(Message *message, Message *response) {
     free(target_user);
     target_user = NULL;
   }
+  nextTurn(current_game);
+
+  turn(current_game);
 }
 
 int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
@@ -295,6 +299,10 @@ void isolation(game_room *current_game, userInfo *current_user) {
   current_user->rest_turn = ISOLATION;
 
   sendAllUser(current_game, &response);
+  
+  nextTurn(current_game);
+
+  turn(current_game);
 }
 
 void salary(game_room *current_game, userInfo *current_user) {
