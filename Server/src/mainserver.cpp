@@ -156,9 +156,9 @@ void *communication_thread(void *arg) {
 	ssize_t readSize = 0;
 	Message message;
 	int received;
+	int roomID = 0;
 
 	clientFD = (int)((thread_param*)arg)->client_fd;
-
 	printf("thread created. client fd : %d\n", clientFD);
 
 	while( (received = read(clientFD, (char*)&message, PACKET_SIZE-readSize)) >= 0 ) 	{
@@ -182,7 +182,6 @@ void *communication_thread(void *arg) {
 
 		// Major_Game에서 필요
 		char *save_ptr = NULL, *roomID_str = NULL;
-		int roomID = 0;
 		bool isFound = false;
 
 		switch( message.category[Major] )	{
@@ -219,6 +218,7 @@ void *communication_thread(void *arg) {
 	}
 
 	printf("Connection Disconnected\n");
+	userDisconnected(roomID, clientFD);
 	return NULL;
 }
 

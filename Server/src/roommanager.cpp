@@ -104,6 +104,28 @@ void exitRoom(Message *message, Message *response) {
     exitAlertRoom(current_game, exit_user);
 }
 
+void userDisconnected(int roomID, int userID) {
+  // 아무 방에 속하지 않는 경우
+  printf("User%d Disconnected\n", userID);
+
+  if( roomID == 0 ) 
+    return;
+
+  game_room *current_game = NULL;
+  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
+    if(it->roomID == roomID) {
+      current_game = &*it;
+      break;
+    }
+  }
+  
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
+    if(it2->number == userID) {
+      current_game->userList.erase(it2);
+    }
+  }
+}
+
 void enterAlertRoom(game_room *current_game, int userID) {
   Message response;
   strcpy(response.identifier, "GOMIN");
@@ -115,10 +137,8 @@ void enterAlertRoom(game_room *current_game, int userID) {
     res += (" " + to_string(it->number));
   strcpy(response.data, res.c_str());
 
-  for(int i = 0; i < current_game->userCount; i++) {
-    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
-      write(it2->FD, (char *)&response, PACKET_SIZE);
-    }
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
+    write(it2->FD, (char *)&response, PACKET_SIZE);
   }
 }
 
@@ -133,10 +153,8 @@ void exitAlertRoom(game_room *current_game, int userID) {
     res += (" " + to_string(it->number));
   strcpy(response.data, res.c_str());
 
-  for(int i = 0; i < current_game->userCount; i++) {
-    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
-      write(it2->FD, (char *)&response, PACKET_SIZE);
-    }
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
+    write(it2->FD, (char *)&response, PACKET_SIZE);
   }
 }
 
@@ -180,9 +198,8 @@ void startRoom(Message *message, Message *response) {
 
   // 모든 유저에게 게임 시작을 알림
   strcpy(response->data, "1");
-  for(int i = 0; i < current_game->userCount; i++)
-    for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-      write(it2->FD, (char *)response, PACKET_SIZE);
+  for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
+    write(it2->FD, (char *)response, PACKET_SIZE);
 
   turn(current_game);
 }

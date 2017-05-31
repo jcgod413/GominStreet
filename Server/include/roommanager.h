@@ -11,5 +11,5 @@ void exitRoom(Message *, Message *);
 void enterAlertRoom(game_room *, int);
 void exitAlertRoom(game_room *, int);
 void startRoom(Message *, Message *);
-
+void userDisconnected(int, int);
 #endif

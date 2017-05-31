@@ -32,15 +32,17 @@ void diceRoll(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   string res;
 
-  if( current_user->rest_turn > 0 )  // ISOLATION, OUT 인 경우
+  if( current_user->rest_turn > 0 ) { // ISOLATION, OUT 인 경우 
     res = "0 " + to_string(current_user->rest_turn);
+    strcpy(response->data, res.c_str());
+    sendAllUser(current_game, response);
+  } 
   else  {
     res = to_string(current_game->turn) + " " + to_string(dice_number);
+    strcpy(response->data, res.c_str());
+    sendAllUser(current_game, response);
     move(current_game, dice_number);
   }
-
-  strcpy(response->data, res.c_str());
-  sendAllUser(current_game, response);
 }
 
 // 한 턴을 증가시켜준 후 모든 유저에게 해당정보를 알림
@@ -54,19 +56,20 @@ void turn(game_room *current_game) {
   // 움직일 수 없는 유저를 통과시키기 위한 코드
   while( current_user->rest_turn == OUT ) {
     current_game->turn = (current_game->turn % current_game->userList.size());
-    current_game->turn++;
-    if( current_game->turn > current_game->userList.size() )
-      current_game->turn = 1;
     current_user = findCurrentUser(current_game, current_game->turn);
   }
   printf("[Turn %d번방 %d번유저 user%d 차례\n", current_game->roomID, current_game->turn, current_user->number);
 
   strcpy(response.data, to_string(current_game->turn).c_str());
   sendAllUser(current_game, &response);
+}
 
+void nextTurn(game_room *current_game)  {
   current_game->turn++;
   if( current_game->turn > current_game->userList.size() )
     current_game->turn = 1;
+
+  turn(current_game);
 }
 
 //move_number = 주사위 숫자 or 황금열쇠 이동 숫자
@@ -91,7 +94,7 @@ void buy(Message *message, Message *response) {
   if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
     strcpy(response->data, "0");
     sendAllUser(current_game, response);
-    turn(current_game);
+    nextTurn(current_game);
     return;
   }
 
@@ -101,7 +104,7 @@ void buy(Message *message, Message *response) {
     && current_game->restaurant_info[restaurant_number].owner != current_turn)) {
     strcpy(response->data, "0");
     sendAllUser(current_game, response);
-    turn(current_game);
+    nextTurn(current_game);
     return;
   }
 
@@ -111,7 +114,7 @@ void buy(Message *message, Message *response) {
   strcpy(response->data, to_string(restaurant_number).c_str());
   sendAllUser(current_game, response);
 
-  turn(current_game);
+  nextTurn(current_game);
 }
 
 void pay(Message *message, Message *response) {
@@ -165,7 +168,7 @@ void pay(Message *message, Message *response) {
       res = "0 " + to_string(current_turn) + " " + to_string(target) + " " + to_string(money);
       strcpy(response->data, res.c_str());
       sendAllUser(current_game, response);
-      turn(current_game);
+      nextTurn(current_game);
       return;
     }
   }
@@ -182,7 +185,7 @@ void pay(Message *message, Message *response) {
     target_user = NULL;
   }
   
-  turn(current_game);
+  nextTurn(current_game);
 }
 
 int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
@@ -240,7 +243,7 @@ void goldKey(Message *message, Message *response) {
 
   goldKeyManager(current_game, key_number);
 
-  turn(current_game);
+  nextTurn(current_game);
 }
 
 void goldKeyManager(game_room *current_game, int key_number) {
@@ -306,7 +309,7 @@ void isolation(Message *message) {
 
   current_user->rest_turn = ISOLATION;
   
-  turn(current_game);
+  nextTurn(current_game);
 }
 
 void salary(Message *message) {
@@ -352,7 +355,9 @@ userInfo *findCurrentUser(game_room *current_game, int turn)  {
 
 void sendAllUser(game_room *current_game, Message *response) {
   for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
+    // 파산하거나 나간 유저 제외하고 전송
     if( it->rest_turn <= ISOLATION )  {
+      printf("Major %d, Minor %d, FD : %d\n", response->category[Major], response->category[Minor], it->number);
       write(it->FD, response, PACKET_SIZE);
     }
   }
