@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 #include <queue>
 #include <pthread.h>
 #include <sys/types.h>
@@ -16,7 +17,7 @@ using namespace std;
 
 #define SALARY 40
 
-#define RESTAURANT_NUM 31
+#define RESTAURANT_NUM 41
 
 const int cycle_money = 50;//한 바퀴 돌 때마다 제공되는 금액
 enum game_status {WAIT, PLAY};

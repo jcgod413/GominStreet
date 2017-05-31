@@ -104,11 +104,11 @@ void exitRoom(Message *message, Message *response) {
     exitAlertRoom(current_game, exit_user);
 }
 
-void userDisconnected(int roomID, int userID) {
+void userDisconnected(int roomID, int userFD) {
+  printf("User%d Disconnected\n", userFD);
+  
   // 아무 방에 속하지 않는 경우
-  printf("User%d Disconnected\n", userID);
-
-  if( roomID == 0 ) 
+  if( roomID == 0 )   
     return;
 
   game_room *current_game = NULL;
@@ -120,7 +120,7 @@ void userDisconnected(int roomID, int userID) {
   }
   
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
-    if(it2->number == userID) {
+    if(it2->FD == userFD) {
       current_game->userList.erase(it2);
     }
   }
@@ -158,10 +158,11 @@ void exitAlertRoom(game_room *current_game, int userID) {
   }
 }
 
-int cost[31] = {0, 200, 180, 170, 200, 200, 200, 200,
-                200, 200, 200, 200, 200, 200, 200, 200,
-                200, 200, 200, 200, 200, 200, 200, 200,
-                200, 200, 200, 200, 200, 200, 200};
+int cost[RESTAURANT_NUM] = {0, 8, 0, 15, 25, 30, 35, 0,
+                            43, 47, 0, 54, 0, 58, 63, 67,
+                            68, 72, 80, 88, 0, 95, 96, 99,
+                            104, 0, 107, 110, 120, 0, 157, 0,
+                            160, 165, 170, 170, 0, 180, 200,};
 
 void startRoom(Message *message, Message *response) {
   char *save_ptr;
@@ -190,7 +191,7 @@ void startRoom(Message *message, Message *response) {
   }
 
   //음식점 초기화
-  for(int i = 1; i <= 30; i++) {
+  for(int i = 0; i < RESTAURANT_NUM; i++) {
     current_game->restaurant_info[i].money = cost[i];
     current_game->restaurant_info[i].owner = 0;
   	current_game->restaurant_info[i].storeCount = 0;

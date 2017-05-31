@@ -164,7 +164,7 @@ void pay(Message *message, Message *response) {
     // 땅을 다 판매해도 목표금액보다 작은경우 파산처리.
     if( current_user->money < money ) {
       current_user->rest_turn = OUT;
-      //turn이 target에게 지불해야 할 money가 없어서 파산하였습니다.
+      // turn이 target에게 지불해야 할 money가 없어서 파산하였습니다.
       res = "0 " + to_string(current_turn) + " " + to_string(target) + " " + to_string(money);
       strcpy(response->data, res.c_str());
       sendAllUser(current_game, response);
@@ -361,6 +361,14 @@ void sendAllUser(game_room *current_game, Message *response) {
       write(it->FD, response, PACKET_SIZE);
     }
   }
+}
+
+void visit(Message *message)  {
+  char *save_ptr;
+  int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
+  game_room *current_game = findCurrentGame(roomID);
+  int current_turn = current_game->turn;
+  userInfo *current_user = findCurrentUser(current_game, current_turn); 
 }
 
 #endif

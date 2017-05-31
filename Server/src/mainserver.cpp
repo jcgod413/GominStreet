@@ -146,6 +146,7 @@ void gameManager(Message *message, Message *response)
 		case Game_GoldKey: 		goldKey(message, response);	break;
 		case Game_Isolation: 	isolation(message);			break;
 		case Game_Salary:		salary(message);			break;
+		case Game_Visit:		visit(message);				break;
 
 		default: printf("error : manager category %d\n", message->category[Minor]);
 	}

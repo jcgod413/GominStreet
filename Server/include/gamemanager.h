@@ -23,4 +23,6 @@ void salary(Message *);
 game_room *findCurrentGame(int roomID);
 userInfo *findCurrentUser(game_room *, int userID);
 void sendAllUser(game_room *, Message *);
+void visit(Message *);
+
 #endif
