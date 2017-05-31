@@ -142,10 +142,6 @@ int cost[31] = {0, 200, 180, 170, 200, 200, 200, 200,
 void startRoom(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  int user[MAX_USER];
-
-  for(int i = 0; i < MAX_USER; i++)
-    user[i] = atoi(strtok_r(NULL, DELIM, &save_ptr));
 
   game_room *current_game = NULL;
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
@@ -180,8 +176,7 @@ void startRoom(Message *message, Message *response) {
   strcpy(response->data, "1");
   for(int i = 0; i < current_game->userCount; i++)
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
-      if(it2->number == user[i])
-        write(it2->FD, (char *)response, PACKET_SIZE);
+      write(it2->FD, (char *)response, PACKET_SIZE);
 
   turn(current_game);
 }
