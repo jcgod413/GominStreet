@@ -12,7 +12,7 @@
 
 <RoomCate>
 •	Room_Create
-: (C->S) [Room_ID] [Title], (S->C) [Room_ID]
+: (C->S) [User_ID] [Title], (S->C) [Room_ID]
 •	Room_List
 : (S->C) (i) [Room_Size], (ii) [Room_ID] [User_Count] [Title]
 •	Room_Enter
