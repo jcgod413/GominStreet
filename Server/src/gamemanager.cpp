@@ -33,11 +33,11 @@ void diceRoll(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   string res;
 
-  if( current_user->rest_turn > 0 ) { // ISOLATION, OUT 인 경우 
+  if( current_user->rest_turn > 0 ) { // ISOLATION, OUT 인 경우
     res = "0 " + to_string(current_user->rest_turn);
     strcpy(response->data, res.c_str());
     sendAllUser(current_game, response);
-  } 
+  }
   else  {
     res = to_string(current_game->turn) + " " + to_string(dice_number);
     strcpy(response->data, res.c_str());
@@ -233,7 +233,7 @@ void goldKey(game_room *current_game, userInfo *current_user) {
   int key_number = rand() % gold_key_num + 1;
   string res = to_string(current_game->turn) + " " + to_string(key_number);
   strcpy(response.data, res.c_str());
-  
+
   sendAllUser(current_game, &response);
   goldKeyManager(current_game, key_number);
 }
@@ -299,8 +299,6 @@ void isolation(game_room *current_game, userInfo *current_user) {
   current_user->rest_turn = ISOLATION;
 
   sendAllUser(current_game, &response);
-  
-  nextTurn(current_game);
 
   turn(current_game);
 }
@@ -311,7 +309,7 @@ void salary(game_room *current_game, userInfo *current_user) {
   strcpy(response.data, to_string(current_game->turn).c_str());
 
   current_user->money += SALARY;
-  
+
   sendAllUser(current_game, &response);
 }
 
@@ -362,21 +360,21 @@ void visit(Message *message)  {
   int position = atoi(strtok_r(NULL, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
   int current_turn = current_game->turn;
-  userInfo *current_user = findCurrentUser(current_game, current_turn); 
+  userInfo *current_user = findCurrentUser(current_game, current_turn);
 
   switch( position )  {
-    case 0:   
+    case 0:
       salary(current_game, current_user);
       break;
     case 10: case 19: case 30:
       isolation(current_game, current_user);
-      break;  
+      break;
     case 2: case 7: case 12: case 25: case 32: case 37:
       goldKey(current_game, current_user);
       break;
     default:
       break;
-      // 땅 
+      // 땅
       // 주인이 있는 경우 (내땅, 남의땅)
       // 주인이 없는 경우 (구매할 돈이 있는경우->구매의사 물어보기, 구매할 돈이 없는경우->스킵)
   }
