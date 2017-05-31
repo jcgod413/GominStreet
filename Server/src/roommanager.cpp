@@ -109,9 +109,12 @@ void enterAlertRoom(game_room *current_game, int userID) {
   strcpy(response.identifier, "GOMIN");
   response.category[Major] = Major_Room;
   response.category[Minor] = Room_Alert_Enter;
+  string res = to_string(current_game->userList.size());
 
-  strcpy(response.data, to_string(userID).c_str());
-  printf("<%d번 방에 user%d이 입장>\n", current_game->roomID, userID);
+  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it)
+    res += (" " + to_string(it->number));
+  strcpy(response.data, res.c_str());
+
   for(int i = 0; i < current_game->userCount; i++) {
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
       write(it2->FD, (char *)&response, PACKET_SIZE);
@@ -124,9 +127,12 @@ void exitAlertRoom(game_room *current_game, int userID) {
   strcpy(response.identifier, "GOMIN");
   response.category[Major] = Major_Room;
   response.category[Minor] = Room_Alert_Exit;
+  string res = to_string(current_game->userList.size());
 
-  strcpy(response.data, to_string(userID).c_str());
-  printf("<%d번 방에 user%d이 퇴장>\n", current_game->roomID, userID);
+  for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it)
+    res += (" " + to_string(it->number));
+  strcpy(response.data, res.c_str());
+
   for(int i = 0; i < current_game->userCount; i++) {
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
       write(it2->FD, (char *)&response, PACKET_SIZE);
