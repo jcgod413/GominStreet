@@ -70,7 +70,7 @@ void enterRoom(Message *message, Message *response, int clientFD) {
   // success response
   strcpy(response->data, "1");
 
-  // enterAlertRoom(current_game, user_info.number);
+  enterAlertRoom(current_game, user_info.number);
 }
 
 void exitRoom(Message *message, Message *response) {
@@ -101,7 +101,7 @@ void exitRoom(Message *message, Message *response) {
     if(is_roomLeader)
       current_game->roomLeader = current_game->userList.begin()->number;
 
-    // exitAlertRoom(current_game, exit_user);
+    exitAlertRoom(current_game, exit_user);
 }
 
 void enterAlertRoom(game_room *current_game, int userID) {
