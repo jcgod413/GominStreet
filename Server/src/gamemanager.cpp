@@ -49,16 +49,24 @@ void turn(game_room *current_game) {
   messageSetting(&response, Major_Game, Game_Turn);  
 
   // turn은 1~플레이어 수, 4명이면 1~4
-  current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
+  current_game->turn = (current_game->turn % current_game->userList.size());
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   // 움직일 수 없는 유저를 통과시키기 위한 코드
   while( current_user->rest_turn == OUT ) {
-    current_game->turn = ((current_game->turn + 1) % current_game->userList.size()) + 1;
+    current_game->turn = (current_game->turn % current_game->userList.size());
+    current_game->turn++;
+    if( current_game->turn > current_game->userList.size() )
+      current_game->turn = 1;
     current_user = findCurrentUser(current_game, current_game->turn);
   }
+  printf("[Turn %d번방 %d번유저 user%d 차례\n", current_game->roomID, current_game->turn, current_user->number);
 
   strcpy(response.data, to_string(current_game->turn).c_str());
   sendAllUser(current_game, &response);
+
+  current_game->turn++;
+  if( current_game->turn > current_game->userList.size() )
+    current_game->turn = 1;
 }
 
 //move_number = 주사위 숫자 or 황금열쇠 이동 숫자
