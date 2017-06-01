@@ -377,6 +377,7 @@ void visit(Message *message)  {
   switch( position )  {
     case 0:
       nextTurn(current_game);
+      break;
     case 10: case 19: case 30:
       isolation(current_game, current_user);
       nextTurn(current_game);
