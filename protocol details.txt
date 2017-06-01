@@ -40,7 +40,7 @@
 •	Game_GoldKey
 : (C->S) [Room_ID], (S->C) 성공 시 [Key_Value] (Key_Value == 1 일 때는 [Key_Value] [Restaurant_Number]) / 실패 시 [0]
 •	Game_Isolation
-: (C->S) [Room_ID]
+: (S->C) [Turn]
 •	Game_Salary
 : (S->C) [Turn]
 •	Game_Sell_Restaurant
@@ -60,6 +60,6 @@ TargetUser_ID  0이면  시스템
 황금열쇠
 1 : 세무조사 => 폐점
 2 : 앞으로 3 이동
-3 : 뒤로 3 이동
+3 : 한바퀴 돌기
 4 : 발전기금 => 돈 뺏기
 5 : 착한식당 => 돈 주기

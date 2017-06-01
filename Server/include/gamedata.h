@@ -19,6 +19,8 @@ using namespace std;
 
 #define RESTAURANT_NUM 40
 
+#define GOLDKEY_MONEY 200
+
 const int cycle_money = 50;	//한 바퀴 돌 때마다 제공되는 금액
 enum game_status {WAIT, PLAY};
 
