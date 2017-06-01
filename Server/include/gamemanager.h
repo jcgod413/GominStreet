@@ -14,6 +14,7 @@ void move(game_room *, int);
 void buy_check(game_room *, userInfo *);
 void buy(Message *, Message *);
 void pay(game_room *, userInfo *, int);
+void payFund(game_room *, userInfo *);
 int findRestaurantOwner(game_room *, userInfo *, bool *);
 void sellRestaurant(game_room *, userInfo *, int, bool);
 void goldKey(game_room *, userInfo *);
