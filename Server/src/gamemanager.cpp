@@ -106,10 +106,7 @@ void buy_check(game_room *current_game, userInfo *current_user) {
   if(current_user->money < current_game->restaurant_info[user_pos].money)
     return;
 
-  string res = to_string(current_game->roomID) + " " + to_string(user_pos);
-
   memset(response.data, 0, sizeof(response.data));
-  strcpy(response.data, res.c_str());
   write(current_user->FD, &response, PACKET_SIZE);
 }
 
@@ -128,7 +125,7 @@ void buy(Message *message, Message *response) {
   current_game->restaurant_info[user_pos].owner = current_turn;
   current_game->restaurant_info[user_pos].storeCount++;
   current_user->money -= current_game->restaurant_info[user_pos].money;
-  strcpy(response->data, to_string(user_pos).c_str());
+  strcpy(response->data, "1");
   sendAllUser(current_game, response);
 
   nextTurn(current_game);
@@ -391,8 +388,9 @@ void visit(Message *message)  {
       if(current_game->restaurant_info[position].owner == 0
       || current_game->restaurant_info[position].owner == current_turn)
         buy_check(current_game, current_user);
+      else//다른 유저의 음식점일 경우
+
       break;
-      // 땅
       // 주인이 있는 경우 (내땅, 남의땅)
       // 주인이 없는 경우 (구매할 돈이 있는경우->구매의사 물어보기, 구매할 돈이 없는경우->스킵)
   }
