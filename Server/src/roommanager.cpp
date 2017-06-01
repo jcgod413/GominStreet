@@ -28,7 +28,7 @@ void listRoom(Message *response, int clientFD) {
     for (it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it){
         memset(response->data, 0, sizeof(response->data));
         room.clear();
-        room = to_string(it->roomID) + " " + to_string(it->status) + " " + to_string(it->userCount) + " " + it->title;
+        room = to_string(it->roomID) + " " + to_string(it->status) + " " + to_string(it->userList.size()) + " " + it->title;
         strcpy(response->data, room.c_str());
         write(clientFD, response, PACKET_SIZE);
         printf("room info : %s\n", response->data);
@@ -62,13 +62,12 @@ void enterRoom(Message *message, int clientFD) {
   }
 
   // if the room is full, send response 0
-  if( current_game->userCount >= MAX_USER ) {
+  if( current_game->userList.size() >= MAX_USER ) {
     strcpy(response.data, "0");
     sendAllUser(current_game, &response);
     return;
   }
 
-  current_game->userCount++;
   current_game->userList.push_back(user_info);
 
   // success response
@@ -91,8 +90,6 @@ void exitRoom(Message *message) {
       current_game = &*it;
       break;
     }
-
-    current_game->userCount--;
 
     bool is_roomLeader = false;
     if(current_game->roomLeader == exit_user)

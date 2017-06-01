@@ -42,7 +42,6 @@ struct game_room {
 	int status;			// game status (wait, play)
 	char title[40];		// room title
 	int turn;			// current turn user index
-	int userCount; //Number of users
 	int roomLeader; //방장
 	list<userInfo> userList;		// user list
 	restaurantInfo restaurant_info[RESTAURANT_NUM];	// index는 1부터

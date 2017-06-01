@@ -244,7 +244,7 @@ void *game_thread(void *arg) {
 		// 해당 방에 메시지 들어올때까지 블로킹(무한)
 		while( current_game->messageQueue.empty() ) {
 			//모두 나가면 게임 스레드 종료
-			if( current_game->userCount == 0 )	{
+			if( current_game->userList.size() == 0 )	{
 				deleteRoom(current_game->roomID);
 				// pthread_mutex_unlock(&mutex_lock);
 				pthread_exit((void *)0);
@@ -293,7 +293,6 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	game_room_info.userList.clear();
 	game_room_info.userList.push_back(user_info);
 	game_room_info.roomLeader = user_info.number;
-	game_room_info.userCount = game_room_info.userList.size();
 	strcpy(game_room_info.title, title.c_str());
 
 	// initialize queue
