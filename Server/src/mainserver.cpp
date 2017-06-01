@@ -142,9 +142,7 @@ void gameManager(Message *message, Message *response)
 	switch( message->category[Minor] )	{
 		case Game_DiceRoll:		diceRoll(message, response); 	break;
 		case Game_Buy: 			buy(message, response);		break;
-		case Game_Pay: 			pay(message, response);		break;
 		case Game_Visit:		visit(message);				break;
-
 		default: printf("error : manager category %d\n", message->category[Minor]);
 	}
 }
