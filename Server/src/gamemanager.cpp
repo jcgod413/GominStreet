@@ -98,21 +98,14 @@ void buy(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, current_turn);
 
   // 돈이 없는 경우
-  if(current_user->money < current_game->restaurant_info[restaurant_number].money) {
-    strcpy(response->data, "0");
-    sendAllUser(current_game, response);
+  if(current_user->money < current_game->restaurant_info[restaurant_number].money)
     return;
-  }
 
   // 점포의 개수가 3개 이상이거나, 다른 주인인 경우
   if(current_game->restaurant_info[restaurant_number].storeCount >= 3
     || (current_game->restaurant_info[restaurant_number].owner > 0
-    && current_game->restaurant_info[restaurant_number].owner != current_turn)) {
-    strcpy(response->data, "0");
-    sendAllUser(current_game, response);
+    && current_game->restaurant_info[restaurant_number].owner != current_turn))
     return;
-  }
-
   current_game->restaurant_info[restaurant_number].owner = current_turn;
   current_game->restaurant_info[restaurant_number].storeCount++;
   current_user->money -= current_game->restaurant_info[restaurant_number].money;
