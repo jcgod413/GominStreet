@@ -19,7 +19,6 @@ using namespace std;
 extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
 
-//timeout
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 // mutex 추가
 
@@ -296,6 +295,7 @@ void isolation(game_room *current_game, userInfo *current_user) {
   current_user->rest_turn = ISOLATION;
 
   sendAllUser(current_game, &response);
+
 }
 
 void salary(game_room *current_game, userInfo *current_user) {
