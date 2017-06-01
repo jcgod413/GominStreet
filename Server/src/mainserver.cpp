@@ -131,7 +131,7 @@ void roomManager(Message *message, Message *response, int clientFD)
 		case Room_List: 		listRoom(message, response, clientFD);		break;
 		case Room_Enter: 		enterRoom(message, clientFD);			return;
 		case Room_Exit: 		exitRoom(message, response);			break;
-		case Room_Start: 		startRoom(message, response);			break;
+		case Room_Start: 		startRoom(message, response);			return;
 		default: printf("error : room category %d\n", message->category[Minor]);
 	}
 	sendResponse(clientFD, response);

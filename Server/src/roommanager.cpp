@@ -176,12 +176,6 @@ void startRoom(Message *message, Message *response) {
       break;
     }
 
-  // 인원수 체크, 2인 미만시 플레이 불가
-  if(current_game->userCount < 2) {
-    strcpy(response->data, 0);
-    return;
-  }
-
   // game_room 상태 변경
 	current_game->status = PLAY;
   current_game->turn = 1;
