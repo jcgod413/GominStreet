@@ -13,7 +13,7 @@ void nextTurn(game_room *);
 void move(game_room *, int);
 void buy_check(game_room *, userInfo *);
 void buy(Message *, Message *);
-void pay(game_room *, userInfo *, userInfo *, bool);
+void pay(game_room *, userInfo *, int);
 int findRestaurantOwner(game_room *, userInfo *, bool *);
 void sellRestaurant(game_room *, userInfo *, int, bool);
 void goldKey(game_room *, userInfo *);

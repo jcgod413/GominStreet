@@ -18,6 +18,7 @@ using namespace std;
 
 extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
+extern int cost[RESTAURANT_NUM];
 
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 // mutex 추가
@@ -32,7 +33,7 @@ void diceRoll(Message *message, Message *response) {
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   string res;
 
-  if( current_user->rest_turn > 0 ) { // ISOLATION, OUT 인 경우
+  if( current_user->rest_turn > 0 ) { // ISOLATION 인 경우
     res = "0 " + to_string(current_user->rest_turn);
     strcpy(response->data, res.c_str());
     sendAllUser(current_game, response);
@@ -132,40 +133,36 @@ void buy(Message *message, Message *response) {
   nextTurn(current_game);
 }
 
-void pay(game_room *current_game, userInfo *give_user, userInfo *target_user, bool flag) {
-
+void pay(game_room *current_game, userInfo *current_user, int target) {
   Message response;
   messageSetting(&response, Major_Game, Game_Pay);
+  userInfo *target_user = findCurrentUser(current_game, target);
 
-  int pay_money;
-  if(flag) {
-    int pos = give_user->position;
-    pay_money = give_user->restaurant_info[give_user_pos].money / 10;
-  }
-  else
-    pay_money = GOLDKEY_MONEY;
+  int pos = current_user->position;
+  int storeCount = current_game->restaurant_info[pos].storeCount;
+  int pay_money = (cost[pos] / 2) * storeCount;
 
-  if( give_user->money < pay_money ) {
-    sellRestaurant(current_game, give_user, money, true);
+  if( current_user->money < pay_money ) {
+    sellRestaurant(current_game, current_user, pay_money, true);
 
     // 땅을 다 판매해도 목표금액보다 작은경우 파산처리.
-    if( give_user->money < money ) {
-      give_user->rest_turn = OUT;
+    if( current_user->money < pay_money ) {
+      current_user->rest_turn = OUT;
       // turn이 target에게 지불해야 할 money가 없어서 파산하였습니다.
-      res = "0 " + to_string(current_game->turn) + " " + to_string(target) + " " + to_string(money);
-      strcpy(response.data, res.c_str());
+      //res = "0 " + to_string(current_game->turn) + " " + to_string(target) + " " + to_string(money);
+      //strcpy(response.data, res.c_str());
       sendAllUser(current_game, &response);
       return;
     }
   }
 
-  give_user->money -= money;
-  target_user->money += money;
+  current_user->money -= pay_money;
+  target_user->money += pay_money;
 
-  res = "1 " + to_string(current_game->turn) + " " + to_string(target) + " " + to_string(money);
+  string res = "1 " + to_string(current_game->turn) + " " + to_string(target) + " " + to_string(pay_money);
   strcpy(response.data, res.c_str());
   sendAllUser(current_game, &response);
-
+/*
   string res;
   //돈이 부족할 경우
   //소유 음식점이 있을 경우 팔아버리고 알림   // iterator로 하나씩 돌면서 자기 보유 금액이 목표금액보다 크거나 같을때까지 땅을 판매
@@ -189,6 +186,7 @@ void pay(game_room *current_game, userInfo *give_user, userInfo *target_user, bo
   res = "1 " + to_string(current_game->turn) + " " + to_string(target) + " " + to_string(money);
   strcpy(response.data, res.c_str());
   sendAllUser(current_game, &response);
+*/
 
 }
 
@@ -302,13 +300,13 @@ void goldKeyManager(game_room *current_game, userInfo *current_user, int key_num
       break;
     case 4: // 고민사거리 발전기금 내기
       system_user = system_user_init();
-      pay(current_game, current_user, system_user, 0);
+      //pay(current_game, current_user, system_user, 0);
       free(system_user);
       system_user = NULL;
       break;
     case 5:// 착한식당 선정
       system_user = system_user_init();
-      pay(current_game, system_user, current_user, 0);
+      //pay(current_game, system_user, current_user, 0);
       free(system_user);
       system_user = NULL;
       break;
@@ -392,7 +390,7 @@ void visit(Message *message)  {
     case 0:
       nextTurn(current_game);
       break;
-    case 10: case 19: case 30:
+    case 10: case 20: case 30:
       isolation(current_game, current_user);
       nextTurn(current_game);
       break;
@@ -408,7 +406,7 @@ void visit(Message *message)  {
       else {//다른 유저의 음식점을 방문할 경우
         int owner_turn = current_game->restaurant_info[position].owner;
         userInfo *owner = findCurrentUser(current_game, owner_turn);
-        pay(current_game, current_user, owner, true);
+        //pay(current_game, current_user, owner, true);
       }
       break;
   }
