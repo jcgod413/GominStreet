@@ -34,7 +34,7 @@
 •	Game_Move
 : (S->C) [Turn] [Dice_Number]
 •	Game_Buy
-: (C->S) [Room_ID] [Restaurant_Number], (S->C) 성공 시 [Restaurant_Number]
+: (C->S) (i) 구매를 할 경우 [Room_ID] [1] / (ii) 구매를 안할 경우 [Room_ID] [0], (S->C) 성공 시 [Restaurant_Number]
 •	Game_Pay
 : (C->S) [Room_ID] [TargetUser_ID] [Money], (S->C) 성공 시 [1] [준사람] [받은사람] [money] / 실패 시 [0] [준사람] [받은사람] [money]
 •	Game_GoldKey
@@ -47,6 +47,8 @@
 : (S->C) 성공 시 (i) 판매인 경우 [1] [Room_ID] [Owner] [Restaurant_Number] [1] (ii) 철거인 경우 [1] [Room_ID] [Owner] [Restaurant_Number] [0], 실패 시 [0] [Room_ID] [turn]
 •	Game_Visit
 : (C->S) [Room_ID]
+•	Game_Buy_Check
+: (S->C) [Room_ID] [User_Position]
 
 RoomNumber 1~
 UserNumber 1~

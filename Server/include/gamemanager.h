@@ -11,6 +11,7 @@ void diceRoll(Message *, Message *);
 void turn(game_room *);
 void nextTurn(game_room *);
 void move(game_room *, int);
+void buy_check(game_room *, userInfo *);
 void buy(Message *, Message *);
 void pay(Message *, Message *);
 int findRestaurantOwner(game_room *, userInfo *, bool *);

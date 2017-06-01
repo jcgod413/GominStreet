@@ -52,6 +52,7 @@ enum GameCate	{
     Game_Salary,
     Game_Sell_Restaurant,
     Game_Visit,
+    Game_Buy_Check,
 };
 
 struct Message  {

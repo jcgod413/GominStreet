@@ -58,9 +58,9 @@ void turn(game_room *current_game) {
 
 void nextTurn(game_room *current_game)  {
   current_game->turn++;
-  if( current_game->turn > current_game->userList.size() )
+  if( current_game->turn > (int) current_game->userList.size() )
     current_game->turn = 1;
-  
+
   // turn은 1~플레이어 수, 4명이면 1~4
   userInfo *current_user = findCurrentUser(current_game, current_game->turn);
   // 움직일 수 없는 유저를 통과시키기 위한 코드
@@ -89,27 +89,46 @@ void move(game_room *current_game, int move_number) {
   }
 }
 
+void buy_check(game_room *current_game, userInfo *current_user) {
+  Message response;
+  messageSetting(&response, Major_Game, Game_Buy_Check);
+  int user_pos = current_user->position;
+
+  //출발점인 경우
+  if(user_pos == 0)
+    return;
+
+  //호점 수가 3개인 경우
+  if(current_game->restaurant_info[user_pos].storeCount >= 3)
+    return;
+
+  // 돈이 없는 경우
+  if(current_user->money < current_game->restaurant_info[user_pos].money)
+    return;
+
+  string res = to_string(current_game->roomID) + " " + to_string(user_pos);
+
+  memset(response.data, 0, sizeof(response.data));
+  strcpy(response.data, res.c_str());
+  write(current_user->FD, &response, PACKET_SIZE);
+}
+
 void buy(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  int restaurant_number = atoi(strtok_r(NULL, DELIM, &save_ptr));
+  int buy_flag = atoi(strtok_r(NULL, DELIM, &save_ptr));
+  if(!buy_flag)
+    return;
+
   game_room *current_game = findCurrentGame(roomID);
   int current_turn = current_game->turn;
   userInfo *current_user = findCurrentUser(current_game, current_turn);
+  int user_pos = current_user->position;
 
-  // 돈이 없는 경우
-  if(current_user->money < current_game->restaurant_info[restaurant_number].money)
-    return;
-
-  // 점포의 개수가 3개 이상이거나, 다른 주인인 경우
-  if(current_game->restaurant_info[restaurant_number].storeCount >= 3
-    || (current_game->restaurant_info[restaurant_number].owner > 0
-    && current_game->restaurant_info[restaurant_number].owner != current_turn))
-    return;
-  current_game->restaurant_info[restaurant_number].owner = current_turn;
-  current_game->restaurant_info[restaurant_number].storeCount++;
-  current_user->money -= current_game->restaurant_info[restaurant_number].money;
-  strcpy(response->data, to_string(restaurant_number).c_str());
+  current_game->restaurant_info[user_pos].owner = current_turn;
+  current_game->restaurant_info[user_pos].storeCount++;
+  current_user->money -= current_game->restaurant_info[user_pos].money;
+  strcpy(response->data, to_string(user_pos).c_str());
   sendAllUser(current_game, response);
 }
 
@@ -364,6 +383,10 @@ void visit(Message *message)  {
       goldKey(current_game, current_user);
       break;
     default:
+      //현재 위치에 소유자가 없는 음식점이거나 본인 소유의 음식점일 경우
+      if(current_game->restaurant_info[position].owner == 0
+      || current_game->restaurant_info[position].owner == current_turn)
+        buy_check(current_game, current_user);
       break;
       // 땅
       // 주인이 있는 경우 (내땅, 남의땅)

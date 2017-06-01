@@ -106,9 +106,9 @@ void exitRoom(Message *message, Message *response) {
 
 void userDisconnected(int roomID, int userFD) {
   printf("User%d Disconnected\n", userFD);
-  
+
   // 아무 방에 속하지 않는 경우
-  if( roomID == 0 )   
+  if( roomID == 0 )
     return;
 
   game_room *current_game = NULL;
@@ -118,10 +118,10 @@ void userDisconnected(int roomID, int userFD) {
       break;
     }
   }
-  
+
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
     if(it2->FD == userFD) {
-      printf("%d번 방에서 %d번 유저 제거\ㅜn", current_game->roomID, it2->number);
+      printf("%d번 방에서 %d번 유저 제거\n", current_game->roomID, it2->number);
       current_game->userList.erase(it2);
     }
   }
