@@ -188,6 +188,7 @@ void startRoom(Message *message, Message *response) {
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
     it2->money = init_money;
     it2->rest_turn = 0;
+    it2->position = 0;
   }
 
   //음식점 초기화

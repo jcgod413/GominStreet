@@ -80,6 +80,13 @@ void move(game_room *current_game, int move_number) {
   string res = to_string(current_game->turn) + " " + to_string(move_number);
   strcpy(response.data, res.c_str());
   sendAllUser(current_game, &response);
+
+  userInfo *current_user = findCurrentUser(current_game, current_game->turn);
+  current_user->position += move_number;
+  if( current_user->position >= RESTAURANT_NUM )  {
+    current_user->position -= RESTAURANT_NUM;
+    salary(current_game, current_user);
+  }
 }
 
 void buy(Message *message, Message *response) {
@@ -358,9 +365,6 @@ void visit(Message *message)  {
   userInfo *current_user = findCurrentUser(current_game, current_turn);
 
   switch( position )  {
-    case 0:
-      salary(current_game, current_user);
-      break;
     case 10: case 19: case 30:
       isolation(current_game, current_user);
       break;

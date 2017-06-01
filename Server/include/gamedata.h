@@ -17,9 +17,9 @@ using namespace std;
 
 #define SALARY 40
 
-#define RESTAURANT_NUM 41
+#define RESTAURANT_NUM 40
 
-const int cycle_money = 50;//한 바퀴 돌 때마다 제공되는 금액
+const int cycle_money = 50;	//한 바퀴 돌 때마다 제공되는 금액
 enum game_status {WAIT, PLAY};
 
 struct restaurantInfo {
@@ -33,6 +33,7 @@ struct userInfo	{
 	int FD;			// file descriptor
 	int money;
 	int rest_turn;	// 3이면 무인도, 9이면 파산 또는 나간 플레이어
+	int position;
 };
 
 struct game_room {

@@ -74,9 +74,7 @@ int main(void)
 			continue;
 		}
 
-		/* test */
 		printf("User entered\n");
-		/* test */
 
 		//create thread
 		thread_parameter.client_fd = client_fd;
