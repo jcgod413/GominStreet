@@ -391,8 +391,9 @@ void visit(Message *message)  {
       if(current_game->restaurant_info[position].owner == 0
       || current_game->restaurant_info[position].owner == current_turn)
         buy_check(current_game, current_user);
-      else//다른 유저의 음식점일 경우
+      else {//다른 유저의 음식점일 경우
 
+      }
       break;
       // 주인이 있는 경우 (내땅, 남의땅)
       // 주인이 없는 경우 (구매할 돈이 있는경우->구매의사 물어보기, 구매할 돈이 없는경우->스킵)
