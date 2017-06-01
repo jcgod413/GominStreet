@@ -351,10 +351,10 @@ void sendAllUser(game_room *current_game, Message *response) {
 void visit(Message *message)  {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
-  int position = atoi(strtok_r(NULL, DELIM, &save_ptr));
   game_room *current_game = findCurrentGame(roomID);
   int current_turn = current_game->turn;
   userInfo *current_user = findCurrentUser(current_game, current_turn);
+  int position = current_user->position;
 
   switch( position )  {
     case 10: case 19: case 30:
