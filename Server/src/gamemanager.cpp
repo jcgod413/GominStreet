@@ -186,6 +186,17 @@ void payFund(game_room *current_game, userInfo *current_user) {
   sendAllUser(current_game, &response);
 }
 
+void getMoney(game_room *current_game, userInfo *current_user) {
+  Message response;
+  messageSetting(&response, Major_Game, Game_Pay);
+
+  current_user->money += GOLDKEY_MONEY;
+
+  string res = "1 0 " + to_string(current_game->turn) + " " + to_string(GOLDKEY_MONEY);
+  strcpy(response.data, res.c_str());
+  sendAllUser(current_game, &response);
+}
+
 int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
   int cnt = 0;
   for(int i = 0; i < RESTAURANT_NUM; i++) {
@@ -271,8 +282,6 @@ void goldKey(game_room *current_game, userInfo *current_user) {
 }
 
 void goldKeyManager(game_room *current_game, userInfo *current_user, int key_number) {
-  userInfo *system_user = NULL;
-
   switch (key_number) {
     case 1:// 폐점
       // 건물 하나 찾아서 없애버리기
@@ -288,10 +297,7 @@ void goldKeyManager(game_room *current_game, userInfo *current_user, int key_num
       payFund(current_game, current_user);
       break;
     case 5:// 착한식당 선정
-      system_user = system_user_init();
-      //pay(current_game, system_user, current_user, 0);
-      free(system_user);
-      system_user = NULL;
+      getMoney(current_game, current_user);
       break;
   }
 }
