@@ -170,7 +170,6 @@ void *communication_thread(void *arg) {
 			printf("Error : Invalid message\n");
 			continue;
 		}
-
 		// 내가 받을땐 숫자로 받고, 보낼땐 문자로 보내기.
 
 		Message response;
@@ -193,7 +192,9 @@ void *communication_thread(void *arg) {
 
 			case Major_Game:
 				// 방번호를 추출함
-			 	roomID_str = strtok_r(message.data, DELIM, &save_ptr);
+				char temp[PACKET_SIZE];
+				strcpy(temp, message.data);
+			 	roomID_str = strtok_r(temp, DELIM, &save_ptr);
 				roomID = atoi(roomID_str);
 				isFound = false;
 
@@ -237,7 +238,7 @@ void *game_thread(void *arg) {
 
 	while(1) {
 		//모두 나가면 게임 스레드 종료
-		if( current_game->userCount == 0 )	{
+		if( current_game->userList.size() == 0 )	{
 			deleteRoom(current_game->roomID);
 			pthread_exit((void *)0);
 		}

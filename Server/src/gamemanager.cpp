@@ -118,7 +118,7 @@ void buy(Message *message, Message *response) {
   int current_turn = current_game->turn;
   userInfo *current_user = findCurrentUser(current_game, current_turn);
   int user_pos = current_user->position;
-  if(!buy_flag) {
+  if(buy_flag == -1) {
     nextTurn(current_game);
     return;
   }
