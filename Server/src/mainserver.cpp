@@ -111,7 +111,7 @@ void sendResponse(int clientFD, Message *response)
 	/* test */
 }
 
-void userManager(Message *message, Message *response)
+void userManager(Message *message, Message *response, int clientFD)
 {
 	switch( message->category[Minor] )	{
 		case User_Login: 	login(message, response);	break;
@@ -121,6 +121,7 @@ void userManager(Message *message, Message *response)
 		case User_Lose: 	lose(message, response);	break;
 		default: printf("error : user category %d\n", message->category[Minor]);
 	}
+	sendResponse(clientFD, response);
 }
 
 void roomManager(Message *message, Message *response, int clientFD)
@@ -128,11 +129,12 @@ void roomManager(Message *message, Message *response, int clientFD)
 	switch( message->category[Minor] )	{
 		case Room_Create: 		createRoom(message, response, clientFD);	break;
 		case Room_List: 		listRoom(message, response, clientFD);		break;
-		case Room_Enter: 		enterRoom(message, clientFD);			break;
+		case Room_Enter: 		enterRoom(message, clientFD);			return;
 		case Room_Exit: 		exitRoom(message, response);			break;
 		case Room_Start: 		startRoom(message, response);			break;
 		default: printf("error : room category %d\n", message->category[Minor]);
 	}
+	sendResponse(clientFD, response);
 }
 
 void gameManager(Message *message, Message *response)
@@ -182,13 +184,11 @@ void *communication_thread(void *arg) {
 
 		switch( message.category[Major] )	{
 			case Major_User:
-				userManager(&message, &response);
-				sendResponse(clientFD, &response);
+				userManager(&message, &response, clientFD);
 				break;
 
 			case Major_Room:
 				roomManager(&message, &response, clientFD);
-				sendResponse(clientFD, &response);
 				break;
 
 			case Major_Game:

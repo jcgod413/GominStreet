@@ -11,7 +11,7 @@ struct thread_param{
 
 bool validityCheck(Message *);
 void sendResponse(int, Message *);
-void userManager(Message *, Message *);
+void userManager(Message *, Message *, int);
 void roomManager(Message *, Message *, int);
 void gameManager(Message *, Message *);
 void *communication_thread(void *);

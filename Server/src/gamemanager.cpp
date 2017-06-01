@@ -363,7 +363,7 @@ void sendAllUser(game_room *current_game, Message *response) {
   for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
     // 파산하거나 나간 유저 제외하고 전송
     if( it->rest_turn <= ISOLATION )  {
-      printf("\t\t\tSend : Major %d, Minor %d, FD : %d\n", response->category[Major], response->category[Minor], it->number);
+      printf("\t\t\tSend : Major %c, Minor %c, FD : %d\n", response->category[Major], response->category[Minor], it->number);
       write(it->FD, response, PACKET_SIZE);
     }
   }

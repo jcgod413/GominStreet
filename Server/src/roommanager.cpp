@@ -38,6 +38,9 @@ void listRoom(Message *message, Message *response, int clientFD) {
 }
 
 void enterRoom(Message *message, int clientFD) {
+  Message response;
+  messageSetting(&response, Major_Room, Room_Enter);
+
   char *save_ptr;
   char *roomID_str = strtok_r(message->data, DELIM, &save_ptr);
   char *user_idx = strtok_r(NULL, DELIM, &save_ptr);
@@ -60,7 +63,8 @@ void enterRoom(Message *message, int clientFD) {
 
   // if the room is full, send response 0
   if( current_game->userCount >= MAX_USER ) {
-    strcpy(response->data, "0");
+    strcpy(response.data, "0");
+    sendAllUser(current_game, &response);
     return;
   }
 
@@ -68,7 +72,8 @@ void enterRoom(Message *message, int clientFD) {
   current_game->userList.push_back(user_info);
 
   // success response
-  strcpy(response->data, "1");
+  strcpy(response.data, "1");
+  write(clientFD, &response, PACKET_SIZE);
 
   enterAlertRoom(current_game, user_info.number);
 }
