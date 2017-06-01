@@ -116,13 +116,7 @@ void userDisconnected(int roomID, int userFD) {
   if( roomID == 0 )
     return;
 
-  game_room *current_game = NULL;
-  for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
-    if(it->roomID == roomID) {
-      current_game = &*it;
-      break;
-    }
-  }
+  game_room *current_game = findCurrentGame(roomID);
 
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
     if(it2->FD == userFD) {
