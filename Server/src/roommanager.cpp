@@ -75,7 +75,7 @@ void enterRoom(Message *message, int clientFD) {
   strcpy(response.data, "1");
   write(clientFD, &response, PACKET_SIZE);
 
-  enterAlertRoom(current_game, user_info.number);
+  enterAlertRoom(current_game);
 }
 
 void exitRoom(Message *message) {
@@ -106,7 +106,7 @@ void exitRoom(Message *message) {
     if(is_roomLeader)
       current_game->roomLeader = current_game->userList.begin()->number;
 
-    exitAlertRoom(current_game, exit_user);
+    exitAlertRoom(current_game);
 }
 
 void userDisconnected(int roomID, int userFD) {
@@ -127,7 +127,7 @@ void userDisconnected(int roomID, int userFD) {
   }
 }
 
-void enterAlertRoom(game_room *current_game, int userID) {
+void enterAlertRoom(game_room *current_game) {
   Message response;
   strcpy(response.identifier, "GOMIN");
   response.category[Major] = Major_Room;
@@ -143,7 +143,7 @@ void enterAlertRoom(game_room *current_game, int userID) {
   }
 }
 
-void exitAlertRoom(game_room *current_game, int userID) {
+void exitAlertRoom(game_room *current_game) {
   Message response;
   strcpy(response.identifier, "GOMIN");
   response.category[Major] = Major_Room;

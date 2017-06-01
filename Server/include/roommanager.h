@@ -8,8 +8,8 @@
 void listRoom(Message *, int);
 void enterRoom(Message *, int);
 void exitRoom(Message *);
-void enterAlertRoom(game_room *, int);
-void exitAlertRoom(game_room *, int);
+void enterAlertRoom(game_room *);
+void exitAlertRoom(game_room *);
 void startRoom(Message *, Message *);
 void userDisconnected(int, int);
 #endif
