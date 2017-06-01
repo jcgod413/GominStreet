@@ -18,7 +18,7 @@ extern shared_memory sharedMemory;
 extern bool room_number[MAX_ROOM];
 const int init_money = 1000;
 
-void listRoom(Message *message, Message *response, int clientFD) {
+void listRoom(Message *response, int clientFD) {
     string room = to_string(sharedMemory.roomList.size());
     strcpy(response->data, room.c_str());
     write(clientFD, response, PACKET_SIZE);

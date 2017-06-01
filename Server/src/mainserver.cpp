@@ -128,7 +128,7 @@ void roomManager(Message *message, Message *response, int clientFD)
 {
 	switch( message->category[Minor] )	{
 		case Room_Create: 		createRoom(message, response, clientFD);	break;
-		case Room_List: 		listRoom(message, response, clientFD);		break;
+		case Room_List: 		listRoom(response, clientFD);		break;
 		case Room_Enter: 		enterRoom(message, clientFD);			return;
 		case Room_Exit: 		exitRoom(message, response);			break;
 		case Room_Start: 		startRoom(message, response);			return;

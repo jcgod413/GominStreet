@@ -37,6 +37,7 @@ void diceRoll(Message *message, Message *response) {
     res = "0 " + to_string(current_user->rest_turn);
     strcpy(response->data, res.c_str());
     sendAllUser(current_game, response);
+    nextTurn(current_game);
   }
   else  {
     res = to_string(current_game->turn) + " " + to_string(dice_number);
@@ -374,6 +375,8 @@ void visit(Message *message)  {
   int current_turn = current_game->turn;
   userInfo *current_user = findCurrentUser(current_game, current_turn);
   int position = current_user->position;
+
+  printf("%d번 유저가 %d 위치를 방문하였습니다.\n", current_turn, position);
 
   switch( position )  {
     case 0:
