@@ -180,9 +180,6 @@ void pay(Message *message, Message *response) {
     free(target_user);
     target_user = NULL;
   }
-  nextTurn(current_game);
-
-  turn(current_game);
 }
 
 int findRestaurantOwner(game_room *current_game, userInfo *current_user, bool *has_restaurant) {
@@ -299,8 +296,6 @@ void isolation(game_room *current_game, userInfo *current_user) {
   current_user->rest_turn = ISOLATION;
 
   sendAllUser(current_game, &response);
-
-  turn(current_game);
 }
 
 void salary(game_room *current_game, userInfo *current_user) {
