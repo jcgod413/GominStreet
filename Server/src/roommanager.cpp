@@ -78,7 +78,7 @@ void enterRoom(Message *message, int clientFD) {
   enterAlertRoom(current_game, user_info.number);
 }
 
-void exitRoom(Message *message, Message *response) {
+void exitRoom(Message *message) {
   char *save_ptr;
 
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));

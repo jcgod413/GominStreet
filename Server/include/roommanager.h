@@ -7,7 +7,7 @@
 
 void listRoom(Message *, int);
 void enterRoom(Message *, int);
-void exitRoom(Message *, Message *);
+void exitRoom(Message *);
 void enterAlertRoom(game_room *, int);
 void exitAlertRoom(game_room *, int);
 void startRoom(Message *, Message *);

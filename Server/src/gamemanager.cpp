@@ -34,7 +34,7 @@ void diceRoll(Message *message, Message *response) {
   string res;
 
   if( current_user->rest_turn > 0 ) { // ISOLATION 인 경우
-    res = "0 " + to_string(current_user->rest_turn);
+    res = "0 " + to_string(current_user->rest_turn--);
     strcpy(response->data, res.c_str());
     sendAllUser(current_game, response);
     nextTurn(current_game);
