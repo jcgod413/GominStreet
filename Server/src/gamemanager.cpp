@@ -270,7 +270,7 @@ void goldKeyManager(game_room *current_game, int key_number) {
   string data;
   int current_turn, cnt, restaurant_number;
   bool has_restaurant[RESTAURANT_NUM];
-  userInfo *current_user;
+  userInfo *current_user  = findCurrentUser(current_game, current_turn);;
   switch (key_number) {
     case 1:// 폐점
       // 건물 하나 찾아서 없애버리기
@@ -282,21 +282,13 @@ void goldKeyManager(game_room *current_game, int key_number) {
     case 3: // 뒤로 이동
       move(current_game, -3);
       break;
-    case 4: // 고민사거리 발전기금 내기//////////////////////////////
+    case 4: // 고민사거리 발전기금 내기
       messageSetting(&message, Major_Game, Game_Pay);
-      data = to_string(current_game->roomID) + " " + "0 500";
-      strcpy(message.data, data.c_str());
-
-      messageSetting(&response, Major_Game, Game_Pay);
-      //pay(&message, &response);
+      pay(current_game, current_user, 0);
       break;
     case 5:// 착한식당 선정///////////////////////////////////
       messageSetting(&message, Major_Game, Game_Pay);
-      data = to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 500";
-      strcpy(message.data, data.c_str());
-
-      messageSetting(&response, Major_Game, Game_Pay);
-      /////////////////pay(&message, &response);
+      pay(current_game, current_user, current_turn);
       break;
   }
 }
