@@ -376,7 +376,8 @@ void visit(Message *message)  {
   userInfo *current_user = findCurrentUser(current_game, current_turn);
   int position = current_user->position;
 
-  printf("%d번 유저가 %d 위치를 방문하였습니다.\n", current_turn, position);
+  printf("%d번 유저가 %d 위치를 방문하였습니다. 주인은 %d 입니다.\n", current_turn, position,
+  current_game->restaurant_info[position].owner);
 
   switch( position )  {
     case 0:
