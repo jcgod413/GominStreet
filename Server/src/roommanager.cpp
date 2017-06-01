@@ -37,7 +37,7 @@ void listRoom(Message *message, Message *response, int clientFD) {
     memset(response->data, 0, sizeof(response->data));
 }
 
-void enterRoom(Message *message, Message *response, int clientFD) {
+void enterRoom(Message *message, int clientFD) {
   char *save_ptr;
   char *roomID_str = strtok_r(message->data, DELIM, &save_ptr);
   char *user_idx = strtok_r(NULL, DELIM, &save_ptr);
@@ -123,6 +123,7 @@ void userDisconnected(int roomID, int userFD) {
     if(it2->FD == userFD) {
       printf("%d번 방에서 %d번 유저 제거\n", current_game->roomID, it2->number);
       current_game->userList.erase(it2);
+      break;
     }
   }
 }

@@ -130,6 +130,8 @@ void buy(Message *message, Message *response) {
   current_user->money -= current_game->restaurant_info[user_pos].money;
   strcpy(response->data, to_string(user_pos).c_str());
   sendAllUser(current_game, response);
+
+  nextTurn(current_game);
 }
 
 void pay(Message *message, Message *response) {
@@ -378,9 +380,11 @@ void visit(Message *message)  {
   switch( position )  {
     case 10: case 19: case 30:
       isolation(current_game, current_user);
+      nextTurn(current_game);
       break;
     case 2: case 7: case 12: case 25: case 32: case 37:
       goldKey(current_game, current_user);
+      nextTurn(current_game);
       break;
     default:
       //현재 위치에 소유자가 없는 음식점이거나 본인 소유의 음식점일 경우
@@ -392,7 +396,6 @@ void visit(Message *message)  {
       // 주인이 있는 경우 (내땅, 남의땅)
       // 주인이 없는 경우 (구매할 돈이 있는경우->구매의사 물어보기, 구매할 돈이 없는경우->스킵)
   }
-  nextTurn(current_game);
 }
 
 #endif
