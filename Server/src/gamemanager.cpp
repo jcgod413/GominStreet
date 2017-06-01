@@ -315,7 +315,6 @@ void salary(game_room *current_game, userInfo *current_user) {
   sendAllUser(current_game, &response);
 }
 
-
 //돈을 증가시키는 프로토콜 => 황금열쇠
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 game_room *findCurrentGame(int roomID)  {
