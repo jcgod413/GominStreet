@@ -50,7 +50,7 @@ void turn(game_room *current_game) {
   Message response;
   messageSetting(&response, Major_Game, Game_Turn);
 
-  printf("[Turn %d번방 %d번유저 차례\n", current_game->roomID, current_game->turn);
+  printf("[Turn] %d번방 %d번유저 차례\n", current_game->roomID, current_game->turn);
 
   strcpy(response.data, to_string(current_game->turn).c_str());
   sendAllUser(current_game, &response);
@@ -228,7 +228,7 @@ void goldKey(game_room *current_game, userInfo *current_user) {
   messageSetting(&response, Major_Game, Game_GoldKey);
   srand(time(NULL));
   int key_number = rand() % gold_key_num + 1;
-  string res = to_string(current_game->turn) + " " + to_string(key_number);
+  string res = to_string(key_number);
   strcpy(response.data, res.c_str());
 
   sendAllUser(current_game, &response);
@@ -342,7 +342,7 @@ void sendAllUser(game_room *current_game, Message *response) {
   for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
     // 파산하거나 나간 유저 제외하고 전송
     if( it->rest_turn <= ISOLATION )  {
-      printf("Major %d, Minor %d, FD : %d\n", response->category[Major], response->category[Minor], it->number);
+      printf("\t\t\tSend : Major %d, Minor %d, FD : %d\n", response->category[Major], response->category[Minor], it->number);
       write(it->FD, response, PACKET_SIZE);
     }
   }

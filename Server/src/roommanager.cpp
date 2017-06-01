@@ -121,6 +121,7 @@ void userDisconnected(int roomID, int userFD) {
   
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
     if(it2->FD == userFD) {
+      printf("%d번 방에서 %d번 유저 제거\ㅜn", current_game->roomID, it2->number);
       current_game->userList.erase(it2);
     }
   }
