@@ -114,15 +114,14 @@ void buy(Message *message, Message *response) {
   char *save_ptr;
   int roomID = atoi(strtok_r(message->data, DELIM, &save_ptr));
   int buy_flag = atoi(strtok_r(NULL, DELIM, &save_ptr));
-  if(!buy_flag) {
-    nextTurn(current_game);
-    return;
-  }
-
   game_room *current_game = findCurrentGame(roomID);
   int current_turn = current_game->turn;
   userInfo *current_user = findCurrentUser(current_game, current_turn);
   int user_pos = current_user->position;
+  if(!buy_flag) {
+    nextTurn(current_game);
+    return;
+  }
 
   current_game->restaurant_info[user_pos].owner = current_turn;
   current_game->restaurant_info[user_pos].storeCount++;
