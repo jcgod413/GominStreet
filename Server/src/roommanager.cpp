@@ -16,6 +16,7 @@ using namespace std;
 
 extern shared_memory sharedMemory;
 extern bool room_number[MAX_ROOM];
+extern pthread_mutex_t mutex_lock;
 const int init_money = 1000;
 
 void listRoom(Message *response, int clientFD) {
@@ -68,7 +69,9 @@ void enterRoom(Message *message, int clientFD) {
     return;
   }
 
+  pthread_mutex_lock(&mutex_lock);
   current_game->userList.push_back(user_info);
+  pthread_mutex_unlock(&mutex_lock);
 
   // success response
   strcpy(response.data, "1");
@@ -96,12 +99,17 @@ void exitRoom(Message *message) {
       is_roomLeader = true;
     for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)
       if(it2->number == exit_user) {
+        pthread_mutex_lock(&mutex_lock);
         current_game->userList.erase(it2);
+        pthread_mutex_unlock(&mutex_lock);
         break;
       }
 
-    if(is_roomLeader)
+    if(is_roomLeader) {
+      pthread_mutex_lock(&mutex_lock);
       current_game->roomLeader = current_game->userList.begin()->number;
+      pthread_mutex_unlock(&mutex_lock);
+    }
 
     exitAlertRoom(current_game);
 }
@@ -118,7 +126,9 @@ void userDisconnected(int roomID, int userFD) {
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2)  {
     if(it2->FD == userFD) {
       printf("%d번 방에서 %d번 유저 제거\n", current_game->roomID, it2->number);
+      pthread_mutex_lock(&mutex_lock);
       current_game->userList.erase(it2);
+      pthread_mutex_unlock(&mutex_lock);
       break;
     }
   }
@@ -174,6 +184,8 @@ void startRoom(Message *message, Message *response) {
     }
 
   // game_room 상태 변경
+  pthread_mutex_lock(&mutex_lock);
+
 	current_game->status = PLAY;
   current_game->turn = 1;
 
@@ -189,6 +201,8 @@ void startRoom(Message *message, Message *response) {
     current_game->restaurant_info[i].owner = 0;
   	current_game->restaurant_info[i].storeCount = 0;
   }
+
+  pthread_mutex_unlock(&mutex_lock);
 
   // 모든 유저에게 게임 시작을 알림
   strcpy(response->data, "1");

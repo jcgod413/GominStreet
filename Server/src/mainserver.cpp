@@ -200,8 +200,10 @@ void *communication_thread(void *arg) {
 				while(!isFound)
 					for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it)
 						if(it->roomID == roomID) {//방번호를 찾았을 때
+							pthread_mutex_lock(&mutex_lock);
 							it->messageQueue.push(message);//공유자원의 큐에 메시지를 넘겨줌
 							isFound = true;
+							pthread_mutex_unlock(&mutex_lock);
 							break;
 						}
 				break;
@@ -221,8 +223,11 @@ void deleteRoom(int roomID)
 {
 	printf("room size : %lu\n", sharedMemory.roomList.size());
 	for (list<game_room>::iterator itri = sharedMemory.roomList.begin(); itri != sharedMemory.roomList.end(); )	{
-		if( itri->roomID == roomID )
+		if( itri->roomID == roomID )	{
+			pthread_mutex_lock(&mutex_lock);
 			itri = sharedMemory.roomList.erase(itri);
+			pthread_mutex_unlock(&mutex_lock);
+		}
 		else
 			itri++;
 	}
@@ -305,7 +310,7 @@ void createRoom(Message *message, Message *response, int clientFD) {
 	sharedMemory.roomList.push_back(game_room_info);
 	pthread_mutex_unlock(&mutex_lock);
 
-	printf("room created. room size : %lu\n", sharedMemory.roomList.size());
+	printf("room created. current room size : %lu\n", sharedMemory.roomList.size());
 
 	// create game thread
 	pthread_create(&game_thread_id, NULL, game_thread, (void *)&game_room_info);

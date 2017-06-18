@@ -34,7 +34,10 @@ void diceRoll(Message *message, Message *response) {
   string res;
 
   if( current_user->rest_turn > 0 ) { // ISOLATION 인 경우
+    pthread_mutex_lock(&mutex_lock);
     res = "0 " + to_string(current_user->rest_turn--);
+    pthread_mutex_unlock(&mutex_lock);
+
     strcpy(response->data, res.c_str());
     sendAllUser(current_game, response);
     nextTurn(current_game);
@@ -125,9 +128,12 @@ void buy(Message *message, Message *response) {
     return;
   }
 
+  pthread_mutex_lock(&mutex_lock);
   current_game->restaurant_info[user_pos].owner = current_turn;
   current_game->restaurant_info[user_pos].storeCount++;
   current_user->money -= current_game->restaurant_info[user_pos].money;
+  pthread_mutex_unlock(&mutex_lock);
+
   strcpy(response->data, "1");
   sendAllUser(current_game, response);
 
@@ -148,7 +154,10 @@ void pay(game_room *current_game, userInfo *current_user, int target) {
 
     // 땅을 다 판매해도 목표금액보다 작은경우 파산처리
     if( current_user->money < pay_money ) {
+      pthread_mutex_lock(&mutex_lock);
       current_user->rest_turn = OUT;
+      pthread_mutex_unlock(&mutex_lock);
+
       // turn이 target에게 지불해야 할 money가 없어서 파산하였습니다.
       strcpy(response.data, "0");
       sendAllUser(current_game, &response);
@@ -156,8 +165,10 @@ void pay(game_room *current_game, userInfo *current_user, int target) {
     }
   }
 
+  pthread_mutex_lock(&mutex_lock);
   current_user->money -= pay_money;
   target_user->money += pay_money;
+  pthread_mutex_unlock(&mutex_lock);
 
   string res = "1 " + to_string(current_game->turn) + " " + to_string(target) + " " + to_string(pay_money);
   strcpy(response.data, res.c_str());
@@ -173,7 +184,10 @@ void payFund(game_room *current_game, userInfo *current_user) {
 
     // 땅을 다 판매해도 목표금액보다 작은경우 파산처리
     if( current_user->money < GOLDKEY_MONEY ) {
+      pthread_mutex_lock(&mutex_lock);
       current_user->rest_turn = OUT;
+      pthread_mutex_unlock(&mutex_lock);
+
       strcpy(response.data, "0");
       sendAllUser(current_game, &response);
       return;
@@ -191,7 +205,9 @@ void getMoney(game_room *current_game, userInfo *current_user) {
   Message response;
   messageSetting(&response, Major_Game, Game_Pay);
 
+  pthread_mutex_lock(&mutex_lock);
   current_user->money += GOLDKEY_MONEY;
+  pthread_mutex_unlock(&mutex_lock);
 
   string res = "1 0 " + to_string(current_game->turn) + " " + to_string(GOLDKEY_MONEY);
   strcpy(response.data, res.c_str());
@@ -224,6 +240,8 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
     while(current_user->money < money * current_game->restaurant_info[current_user->position].storeCount && cnt > 0)
       for(int i = restaurant_number + 1; i < RESTAURANT_NUM; i++)
         if(has_restaurant[i]) {
+          pthread_mutex_lock(&mutex_lock);
+
           restaurant_number = i;
           has_restaurant[restaurant_number] = false;
           cnt--;
@@ -240,6 +258,8 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
           res += " " + to_string(restaurant_number) + " " + to_string(money * current_game->restaurant_info[current_user->position].storeCount);
           strcpy(response.data, res.c_str());
           sendAllUser(current_game, &response);
+
+          pthread_mutex_unlock(&mutex_lock);
           break;
         }
   }
@@ -260,8 +280,11 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
       }
 
       res = "1 " + to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 0";
+      
+      pthread_mutex_lock(&mutex_lock);
       current_game->restaurant_info[restaurant_number].owner = 0;
       current_game->restaurant_info[restaurant_number].storeCount = 0;
+      pthread_mutex_unlock(&mutex_lock);
 
       memset(response.data, 0, sizeof(response.data));
       res += " " + to_string(restaurant_number);
@@ -275,6 +298,7 @@ void goldKey(game_room *current_game, userInfo *current_user) {
   messageSetting(&response, Major_Game, Game_GoldKey);
   srand(time(NULL));
   int key_number = rand() % gold_key_num + 1;
+
   string res = to_string(key_number);
   strcpy(response.data, res.c_str());
 
@@ -313,7 +337,9 @@ void isolation(game_room *current_game, userInfo *current_user) {
   messageSetting(&response, Major_Game, Game_Isolation);
   strcpy(response.data, to_string(current_game->turn).c_str());
 
+  pthread_mutex_lock(&mutex_lock);
   current_user->rest_turn = ISOLATION;
+  pthread_mutex_unlock(&mutex_lock);
 
   sendAllUser(current_game, &response);
 }
@@ -323,7 +349,9 @@ void salary(game_room *current_game, userInfo *current_user) {
   messageSetting(&response, Major_Game, Game_Salary);
   strcpy(response.data, to_string(current_game->turn).c_str());
 
+  pthread_mutex_lock(&mutex_lock);
   current_user->money += SALARY;
+  pthread_mutex_unlock(&mutex_lock);
 
   sendAllUser(current_game, &response);
 }
@@ -332,21 +360,19 @@ void salary(game_room *current_game, userInfo *current_user) {
 //게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
 game_room *findCurrentGame(int roomID)  {
   game_room *current_game = NULL;
-  //pthread_mutex_lock(&mutex_lock);
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
     if(it->roomID == roomID) {
       current_game = &*it;
       break;
     }
   }
-  //pthread_mutex_unlock(&mutex_lock);
+
   return current_game;
 }
 
 userInfo *findCurrentUser(game_room *current_game, int turn)  {
   userInfo *current_user = NULL;
   int turnCnt = 0;
-  //pthread_mutex_lock(&mutex_lock);
   for(list<userInfo>::iterator it = current_game->userList.begin(); it != current_game->userList.end(); ++it) {
     turnCnt++;
     if(turnCnt == turn) {
@@ -354,7 +380,7 @@ userInfo *findCurrentUser(game_room *current_game, int turn)  {
       break;
     }
   }
-  //pthread_mutex_unlock(&mutex_lock);
+
   return current_user;
 }
 
