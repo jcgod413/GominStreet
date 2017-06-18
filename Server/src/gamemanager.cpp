@@ -55,13 +55,15 @@ void turn(game_room *current_game) {
   Message response;
   messageSetting(&response, Major_Game, Game_Turn);
 
-  printf("[Turn] %d번방 %d번유저 차례\n", current_game->roomID, current_game->turn);
+  printf("[Turn Alert] %d번방 %d번유저 차례입니다.\n", current_game->roomID, current_game->turn);
 
   strcpy(response.data, to_string(current_game->turn).c_str());
   sendAllUser(current_game, &response);
 }
 
 void nextTurn(game_room *current_game)  {
+  pthread_mutex_lock(&mutex_lock);
+
   current_game->turn++;
   if( current_game->turn > (int) current_game->userList.size() )
     current_game->turn = 1;
@@ -73,6 +75,8 @@ void nextTurn(game_room *current_game)  {
     current_game->turn = (current_game->turn % current_game->userList.size());
     current_user = findCurrentUser(current_game, current_game->turn);
   }
+  
+  pthread_mutex_unlock(&mutex_lock);
 
   turn(current_game);
 }

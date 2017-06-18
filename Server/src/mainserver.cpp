@@ -60,9 +60,8 @@ int main(void)
 		exit(1);
 	}
 
-	/* test */
 	printf("Server running ...\n");
-	/* test */
+	signal(SIGPIPE, SIG_IGN);
 
 	client_addr_len = sizeof(client_addr);
 	memset(room_number, 0, sizeof(room_number));
