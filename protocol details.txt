@@ -1,14 +1,19 @@
 <UserCate>
-•	User_Login
-: (C->S) [User_ID] [Passward], (S->C) 성공시 [User_ID] / 실패 시 [0]
-•	User_Signup
-: (C->S) [User_ID] [Passward], (S->C) 성공시 [User_ID] / 실패 시 [0]
-•	User_Record
-: (C->S) [User_ID], (S->C) 성공 시 [Win_Lose_Result] / 실패 시 [0]
-•	User_Win
-: (C->S) [User_ID], (S->C) 성공 시 [1] / 실패 시 [0]
-•	User_Lose
-: (C->S) [User_ID], (S->C) 성공 시 [1] / 실패 시 [0]
+- User_Login
+(C->S) [ID] [Passward]
+(S->C) 성공 시 [User_Index] / 실패 시 [0]
+- User_Signup
+(C->S) [ID] [Passward]
+(S->C) 성공시 [User_Index] / 실패 시 [0]
+- User_Record
+(C->S) [User_Index]
+(S->C) 성공 시 [Win] [Lose] / 실패 시 [0]
+- User_Win
+(C->S) [User_Index]
+(S->C) 성공 시 [1] / 실패 시 [0]
+- User_Lose
+(C->S) [User_Index]
+(S->C) 성공 시 [1] / 실패 시 [0]
 
 <RoomCate>
 •	Room_Create
