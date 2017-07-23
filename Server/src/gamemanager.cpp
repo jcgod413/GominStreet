@@ -239,7 +239,7 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
   int cnt = findRestaurantOwner(current_game, current_user, has_restaurant);
   
   if(flag) {//다른 유저의 음식점을 방문했는데 돈이 부족해서 본인의 건물을 판매하는 경우
-    res = "1 " + to_string(current_game->turn);
+    res = "1 " + to_string(current_game->roomID) + " " + to_string(current_game->turn);
     while(current_user->money < money * current_game->restaurant_info[current_user->position].storeCount && cnt > 0)
       for(int i = restaurant_number + 1; i < RESTAURANT_NUM; i++)
         if(has_restaurant[i]) {
@@ -276,13 +276,13 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
       }
 
       if(restaurant_number == 0) {
-          res = "0 " + to_string(current_game->turn);
+          res = "0 " + to_string(current_game->roomID) + " " + to_string(current_game->turn);
           strcpy(response.data, res.c_str());
           sendAllUser(current_game, &response);
           return;
       }
 
-      res = "1 " + to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 0";
+      res = "1 " + to_string(current_game->roomID) + " " + to_string(current_game->turn);
       
       has_restaurant[restaurant_number] = false;
       pthread_mutex_lock(&mutex_lock);
@@ -291,7 +291,7 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
       pthread_mutex_unlock(&mutex_lock);
 
       memset(response.data, 0, sizeof(response.data));
-      res += " " + to_string(restaurant_number);
+      res += " " + to_string(restaurant_number) + " 0";
       strcpy(response.data, res.c_str());
       sendAllUser(current_game, &response);
   }
