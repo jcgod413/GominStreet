@@ -35,28 +35,31 @@
 (S->C) 성공 시 [1], 실패 시 [0]
 
 <GameCate>
-•	Game_DiceRoll
-: (C->S) [Room_ID], (S->C) 성공 시 [turn] [주사위번호] / 실패 시 [0] [남은 턴(9가 날라오면 죽은 유저)]
-•	Game_Turn
-: (C->S) [Room_ID], (S->C)[Turn]
-•	Game_Move
-: (S->C) [Turn] [Dice_Number]
-•	Game_Buy
-: (C->S) (i) 구매를 할 경우 [Room_ID] [1] / (ii) 구매를 안할 경우 [Room_ID] [0], (S->C) 구매할 경우 [1]
-•	Game_Pay
-: (S->C) 성공 시 [1] [준사람] [받은사람] [money] / 실패 시 [0]
-•	Game_GoldKey
-: (C->S) [Room_ID], (S->C) 성공 시 [Key_Value] (Key_Value == 1 일 때는 [Key_Value] [Restaurant_Number]) / 실패 시 [0]
+- Game_DiceRoll
+(C->S) [Room_ID]
+(S->C) 성공 시 [Turn] [Dice_Num] / 실패 시 [0] [Rest_Turn] : Rest_Turn == OUT(9) 이면 파산한 유저
+- Game_Turn
+(S->C)[Turn]
+- Game_Move
+(S->C) [Turn] [User_Position]
+- Game_Buy_Check
+(S->C) X
+- Game_Buy
+(C->S) 구매 할 경우 [Room_ID] [1] / 구매 안할 경우 [Room_ID] [0]
+(S->C) 구매 할 경우 [1]
+- Game_Pay
+(S->C) 성공 시 [1] [Giver] [Taker] [money] / 실패 시 [0]
+- Game_Sell_Restaurant
+(S->C) 성공 시 [1] [Room_ID] [Turn] [Restaurant_Number] [Money], 실패 시 [0] [Room_ID] [Turn]
+- Game_GoldKey
+(C->S) [Room_ID]
+(S->C) 성공 시 [Key_Value] (Key_Value == 1 일 때는 [Key_Value] [Restaurant_Number]) / 실패 시 [0]
 •	Game_Isolation
 : (S->C) [Turn]
 •	Game_Salary
 : (S->C) [Turn]
-•	Game_Sell_Restaurant
-: (S->C) 성공 시 [1] [Owner] [Restaurant_Number] [Money], 실패 시 [0] [turn]
 •	Game_Visit
 : (C->S) [Room_ID]
-•	Game_Buy_Check
-: (S->C) X
 
 RoomNumber 1~
 UserNumber 1~
