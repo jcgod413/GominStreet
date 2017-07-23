@@ -234,8 +234,10 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
   string res;
   bool has_restaurant[RESTAURANT_NUM];
   int restaurant_number = 0;
-  int cnt = findRestaurantOwner(current_game, current_user, has_restaurant);
+  
   memset(has_restaurant, 0, sizeof(has_restaurant));
+  int cnt = findRestaurantOwner(current_game, current_user, has_restaurant);
+  
   if(flag) {//다른 유저의 음식점을 방문했는데 돈이 부족해서 본인의 건물을 판매하는 경우
     res = "1 " + to_string(current_game->turn);
     while(current_user->money < money * current_game->restaurant_info[current_user->position].storeCount && cnt > 0)
@@ -282,6 +284,7 @@ void sellRestaurant(game_room *current_game, userInfo *current_user, int money, 
 
       res = "1 " + to_string(current_game->roomID) + " " + to_string(current_game->turn) + " 0";
       
+      has_restaurant[restaurant_number] = false;
       pthread_mutex_lock(&mutex_lock);
       current_game->restaurant_info[restaurant_number].owner = 0;
       current_game->restaurant_info[restaurant_number].storeCount = 0;
