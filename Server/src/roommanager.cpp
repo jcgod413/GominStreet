@@ -52,7 +52,7 @@ void enterRoom(Message *message, int clientFD) {
   user_info.number = atoi(user_idx);
   user_info.FD = clientFD;
   user_info.money = 0;
-	user_info.rest_turn = 0;
+  user_info.rest_turn = 0;
 
   // find game room in shared memory
   for (list<game_room>::iterator it = sharedMemory.roomList.begin(); it != sharedMemory.roomList.end(); ++it) {
