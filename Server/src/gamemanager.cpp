@@ -20,9 +20,6 @@ extern shared_memory sharedMemory;
 extern pthread_mutex_t mutex_lock;
 extern int cost[RESTAURANT_NUM];
 
-//게임 종료 프로토콜 => 파산 안 당한 1명만 남았을 때
-// mutex 추가
-
 void diceRoll(Message *message, Message *response) {
   srand(time(NULL));
   //주사위 번호 1 ~ 12

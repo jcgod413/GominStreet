@@ -31,7 +31,8 @@
 - Room_Alert_Exit
 (S->C) [User_Size] [User1_Index] ... [UserN_Index]
 - Room_Start
-(C->S) [Room_ID] / (S->C) 성공 시 [1], 오류 시 [0]
+(C->S) [Room_ID]
+(S->C) 성공 시 [1], 실패 시 [0]
 
 <GameCate>
 •	Game_DiceRoll
