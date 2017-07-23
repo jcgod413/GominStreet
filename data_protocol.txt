@@ -16,12 +16,14 @@
 (S->C) 성공 시 [1] / 실패 시 [0]
 
 <RoomCate>
-•	Room_Create
-: (C->S) [User_ID] [Title], (S->C) [Room_ID]
-•	Room_List
-: (S->C) (i) [Room_Size], (ii) [Room_ID] [User_Count] [Title]
-•	Room_Enter
-: (C->S) [Room_ID] [User_ID], (S->C) 성공 시 [1] / 실패 시 [0]
+- Room_Create
+(C->S) [User_Index] [Title]
+(S->C) [Room_ID]
+- Room_List
+(S->C) (i) [Room_Size], (ii) [Room_ID] [Room_Status] [User_Count] [Title] : 방 개수 만큼 전송
+- Room_Enter
+(C->S) [Room_ID] [User_Index]
+(S->C) 성공 시 [1] / 실패 시 [0]
 •	Room_Exit
 : (C->S) [Room_ID] [User_ID]
 •	Room_Alert_Enter
