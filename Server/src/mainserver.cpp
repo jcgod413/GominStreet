@@ -285,9 +285,9 @@ void createRoom(Message *message, Message *response, int clientFD) {
 
 	for(int n = 1; n < MAX_ROOM; n++)	{
 		if(!room_number[n]) {
-				game_room_info.roomID = n;
-				room_number[n] = true;
-				break;
+            game_room_info.roomID = n;
+            room_number[n] = true;
+            break;
 		}
 	}
 
