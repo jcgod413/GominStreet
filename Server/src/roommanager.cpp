@@ -199,7 +199,7 @@ void startRoom(Message *message, Message *response) {
   for(int i = 0; i < RESTAURANT_NUM; i++) {
     current_game->restaurant_info[i].money = cost[i];
     current_game->restaurant_info[i].owner = 0;
-  	current_game->restaurant_info[i].storeCount = 0;
+    current_game->restaurant_info[i].storeCount = 0;
   }
 
   pthread_mutex_unlock(&mutex_lock);
