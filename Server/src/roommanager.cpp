@@ -186,7 +186,7 @@ void startRoom(Message *message, Message *response) {
   // game_room 상태 변경
   pthread_mutex_lock(&mutex_lock);
 
-	current_game->status = PLAY;
+  current_game->status = PLAY;
   current_game->turn = 1;
 
   for(list<userInfo>::iterator it2 = current_game->userList.begin(); it2 != current_game->userList.end(); ++it2) {
