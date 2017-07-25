@@ -30,22 +30,22 @@ struct restaurantInfo {
 };
 
 struct userInfo	{
-	int number;		// user index
-	int FD;			// file descriptor
+	int number;// user index
+	int FD;// file descriptor
 	int money;
-	int rest_turn;	// 3이면 무인도, 9이면 파산 또는 나간 플레이어
+	int rest_turn;// 3(ISOLATION)이면 무인도, 9(OUT)이면 파산 또는 나간 플레이어
 	int position;
 };
 
 struct game_room {
-	int roomID;	// room id(thread num)
-	int status;			// game status (wait, play)
-	char title[40];		// room title
-	int turn;			// current turn user index
-	int roomLeader; //방장
-	list<userInfo> userList;		// user list
-	restaurantInfo restaurant_info[RESTAURANT_NUM];	// index는 1부터
-	queue<Message> messageQueue;	// message queue (raw message)
+	int roomID;// room id
+	int status;// game status (wait, play)
+	char title[40];// room title
+	int turn;// current turn user turn
+	int roomLeader;//방장
+	list<userInfo> userList;// user list
+	restaurantInfo restaurant_info[RESTAURANT_NUM];// index는 1부터
+	queue<Message> messageQueue;// message queue (raw message)
 };
 
 struct shared_memory	{
